@@ -19,8 +19,15 @@ type Rule struct {
 
 func GetRules() *[]Rule {
 
-	//connect to Dao
+	//todo connect to Dao
 	rules := []Rule{}
 
 	return &rules
+}
+
+func AddRule(r Rule) int {
+	//todo
+
+	//return status code
+	return 0
 }
