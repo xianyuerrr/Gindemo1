@@ -6,6 +6,6 @@ import (
 )
 
 func customRoute(r *gin.Engine) {
-	r.GET("/ping", services.Pang)
-	r.GET("/", services.Hit)
+	r.GET("/check", services.Check)
+	r.POST("/config", services.Config)
 }
