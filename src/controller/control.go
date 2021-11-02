@@ -2,7 +2,7 @@ package controller
 
 import (
 	"demo1/src/model"
-	"demo1/src/services"
+	"demo1/src/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -18,7 +18,7 @@ func Config(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if services.CheckConfig(config) {
+	if service.CheckConfig(config) {
 		c.JSON(http.StatusOK, config)
 	} else {
 		c.String(http.StatusBadRequest, "check fail")
@@ -31,7 +31,7 @@ func Check(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	downloadUrl, updateVersionCode, md5, title, updateTips := services.Hit(form)
+	downloadUrl, updateVersionCode, md5, title, updateTips := service.Hit(form)
 	c.JSON(http.StatusOK, gin.H{
 		"download_url:":       downloadUrl,
 		"update_version_code": updateVersionCode,
