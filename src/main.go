@@ -7,5 +7,7 @@ import (
 func main() {
 	r := gin.Default()
 	customRoute(r)
-	r.Run(":8000")
+	if err := r.Run(":8000"); err != nil {
+		return
+	}
 }

@@ -1,26 +1,24 @@
 package model
 
 type Rule struct {
-	Platform             string `json:"platform"`
-	DownloadUrl          string `json:"download_url"`
-	UpdateVersionCode    string `json:"update_version_code"`
-	Md5                  string `json:"md5"`
-	DeviceIdList         string `json:"device_id_list"`
-	MaxUpdateVersionCode string `json:"max_update_version_code"`
-	MinUpdateVersionCode string `json:"min_update_version_code"`
-	MaxOsApi             int    `json:"max_os_api"`
-	MinOsApi             int    `json:"min_os_api"`
-	CpuArch              string `json:"cpu_arch"`
-	GreyLink             string `json:"grey_link"`
-	Channel              string `json:"channel"`
-	Title                string `json:"title"`
-	UpdateTips           string `json:"update_tips"`
+	Platform             string `form:"platform" binding:"required"`
+	UpdateVersionCode    string `form:"update_version_code" binding:"required"`
+	Md5                  string `form:"md_5" binding:"required"`
+	DeviceIdList         string `form:"device_id_list" binding:"required"`
+	MaxUpdateVersionCode string `form:"max_update_version_code" binding:"required"`
+	MinUpdateVersionCode string `form:"min_update_version_code" binding:"required"`
+	MaxOsApi             int    `form:"max_os_api" binding:"required"`
+	MinOsApi             int    `form:"min_os_api" binding:"required"`
+	CpuArch              string `form:"cpu_arch" binding:"required"`
+	Channel              string `form:"channel" binding:"required"`
+	Title                string `form:"title" binding:"required"`
+	UpdateTips           string `form:"update_tips" binding:"required"`
 }
 
 func GetRules() *[]Rule {
 
 	//todo connect to Dao
-	rules := []Rule{}
+	var rules []Rule
 
 	return &rules
 }

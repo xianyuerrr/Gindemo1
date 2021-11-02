@@ -6,36 +6,31 @@ import (
 )
 
 type client struct {
-	version           string
-	devicePlatform    string
-	deviceId          string
-	osApi             string
-	channel           string
-	versionCode       string
-	updateVersionCode string
-	aid               string
+	Version           string `json:"version" binding:"required"`
+	DevicePlatform    string `json:"device_platform" binding:"required"`
+	DeviceId          string `json:" device_id" binding:"required"`
+	OsApi             string `json:"os_api" binding:"required"`
+	Channel           string `json:"channel" binding:"required"`
+	VersionCode       string `json:"version_code" binding:"required"`
+	UpdateVersionCode string `json:"update_version_code" binding:"required"`
+	Aid               string `json:"aid" binding:"required"`
 }
 
-func hit(cq map[string][]string) (string, string, string, string, string) {
+func hit(form client) (string, string, string, string, string) {
 	//todo
 
 	//if hit,
 	//return downloadUrl, updateVersionCode, md5, title, updateTips
+
 	return "11", "22", "33", "44", "55"
 }
 func Check(c *gin.Context) {
-	cq := c.Request.URL.Query()
-
-	//version := c.Query("version")
-	//device_platform := c.Query("device_platform")
-	//device_id := c.Query("device_id")
-	//os_api := c.Query("os_api")
-	//channel := c.Query("channel")
-	//version_code := c.Query("version_code")
-	//update_version_code := c.Query("update_version_code")
-	//aid := c.Query("aid")
-	//cpu_arch := c.Query("cpu_arch")
-	downloadUrl, updateVersionCode, md5, title, updateTips := hit(cq)
+	var form client
+	if err := c.ShouldBindJSON(&form); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	downloadUrl, updateVersionCode, md5, title, updateTips := hit(form)
 	c.JSON(http.StatusOK, gin.H{
 		"download_url:":       downloadUrl,
 		"update_version_code": updateVersionCode,

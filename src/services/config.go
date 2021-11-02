@@ -1,34 +1,30 @@
 package services
 
 import (
-	"fmt"
+	"demo1/src/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func checkConfig(cq map[string][]string) bool {
+func checkConfig(config model.Rule) bool {
 	//todo
-	return true
+
+	if model.AddRule(config) == 0 {
+		return true
+	}
+	return false
+
 }
 func Config(c *gin.Context) {
-	platform := c.PostForm("platform")                     //string
-	downloadUrl := c.PostForm("download_url")              //string
-	updateVersionCode := c.PostForm("update_version_code") //string
-	md5 := c.PostForm("md5")                               //string
-	//deviceIdList := c.Query("device_id_list")                  //string
-	//maxUpdateVersionCode := c.Query("max_update_version_code") //string
-	//minUpdateVersionCode := c.Query("min_update_version_code") //string
-	//maxOsApi := c.Query("max_os_api")                          //int
-	//minOsApi := c.Query("min_os_api")                          //int
-	//cpuArch := c.Query("cpu_arch")                             //string
-	//channel := c.Query("channel")                              //string
-	//title := c.Query("title")                                  //string
-	//updateTips := c.Query("update_tips")                       //string
-	fmt.Println(platform, downloadUrl, updateVersionCode, md5)
-	if checkConfig(c.Request.URL.Query()) {
+
+	var config model.Rule
+	if err := c.Bind(&config); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if checkConfig(config) {
 		c.String(http.StatusOK, "post success")
 	} else {
-		c.String(http.StatusBadGateway, "check 	fail")
+		c.String(http.StatusBadRequest, "check fail")
 	}
-
 }
