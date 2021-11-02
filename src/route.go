@@ -1,11 +1,11 @@
 package main
 
 import (
-	"demo1/src/services"
+	"demo1/src/controller"
 	"github.com/gin-gonic/gin"
 )
 
 func customRoute(r *gin.Engine) {
-	r.GET("/check", services.Check)
-	r.POST("/config", services.Config)
+	r.GET("/check", controller.Check)
+	r.POST("/config", controller.Config)
 }
