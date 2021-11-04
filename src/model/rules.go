@@ -6,6 +6,8 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
+//todo test
+
 type Rule struct {
 	Aid                  int    `json:"aid" form:"aid" binding:"required" gorm:"Column:aid"`
 	Platform             string `form:"platform" binding:"required" json:"platform" db:"platform" gorm:"Column:platform; Type:varchar(128)"`
@@ -23,24 +25,44 @@ type Rule struct {
 	UpdateTips           string `form:"update_tips" binding:"required" json:"update_tips" gorm:"Column:update_tips; Type:varchar(1024)"`
 }
 
-var Db *gorm.DB
+type NewRule struct {
+	gorm.Model
+	Rule
+	DeviceIdList []WhiteList `gorm:"many2many:rule2device_list;"`
+}
 
-func init() {
-	dsn := "root:wang0805@tcp(127.0.0.1:3306)/sys?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open("mysql", dsn)
+func (NewRule) TableName() string {
+	return "rules"
+}
+
+func rule2newRule(rule Rule) NewRule {
+	whiteList := ParseWhiteList(rule.DeviceIdList)
+	return NewRule{Rule: rule, DeviceIdList: whiteList}
+}
+
+func GetRules(deviceId string) []Rule {
+	Mysql()
+	defer Db.Close()
+
+	var newRules = make([]NewRule, 0)
+	err := Db.Model(&WhiteList{}).Where("device_name = ?", deviceId).Association("rules").Find(&newRules)
 	if err != nil {
 		panic(err)
 	}
-	Db = db
+	rules := make([]Rule, 0)
+	for index := 0; index < len(newRules); index++ {
+		rules = append(rules, newRules[index].Rule)
+	}
+	return rules
 }
 
-//func GetRules() *[]Rule {
-//
-//}
-
 func AddRule(rule Rule) bool {
-	Db.AutoMigrate(&Rule{})
-	if err := Db.Create(&rule).Error; err != nil {
+	Mysql()
+	defer Db.Close()
+
+	Db.AutoMigrate(&NewRule{})
+	var newRule = rule2newRule(rule)
+	if err := Db.Create(&newRule).Error; err != nil {
 		return false
 	}
 	return true
