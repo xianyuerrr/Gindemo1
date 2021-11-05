@@ -1,0 +1,6 @@
+mysql:
+  dsn: "root:wang0805@tcp(127.0.0.1:3306)/sys?charset=utf8mb4&parseTime=True&loc=Local"
+  max_open: 100
+  max_idle: 10
+  life_time: "+3s"
+  log: true

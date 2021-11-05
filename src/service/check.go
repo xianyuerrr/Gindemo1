@@ -7,8 +7,7 @@ import (
 )
 
 func Hit(form model.Client) (string, string, string, string, string) {
-	//todo
-	
+	//todo test
 	//if hit,
 	//return downloadUrl, updateVersionCode, md5, title, updateTips
 	
