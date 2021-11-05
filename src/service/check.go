@@ -10,15 +10,15 @@ func Hit(form model.Client) (string, string, string, string, string) {
 	//todo test
 	//if hit,
 	//return downloadUrl, updateVersionCode, md5, title, updateTips
-	
+
 	var downloadUrl, updateVersionCode, md5, title, updateTips string
-	
-	//需要 model 层实现返回规则集的接口
+
+	//需要 model 层实现返回规则集的接口 已完成
 	//var rules *[]model.Rule
-	rules := model.GetRules()
+	rules := model.GetRules(form.DeviceId)
 	//order by updateVersionCode, use quickSort O(nlogn)
 	quickSort(rules, 0, len(*rules)-1)
-	
+
 	//O(n)
 	for _, rule := range *rules {
 		if matchRule(&rule, &form) {

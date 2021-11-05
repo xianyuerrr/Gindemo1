@@ -37,10 +37,11 @@ func (NewRule) TableName() string {
 
 func rule2newRule(rule Rule) NewRule {
 	whiteList := ParseWhiteList(rule.DeviceIdList)
-	return NewRule{Rule: rule, DeviceIdList: whiteList}
+	return NewRule{Rule: rule, DeviceIdList: *whiteList}
 }
 
-func GetRules(deviceId string) []Rule {
+func GetRules(deviceId string) *[]Rule {
+	//todo test
 	Mysql()
 	defer Db.Close()
 
@@ -53,11 +54,12 @@ func GetRules(deviceId string) []Rule {
 	for index := 0; index < len(newRules); index++ {
 		rules = append(rules, newRules[index].Rule)
 	}
-	return rules
+	return &rules
 }
 
 //noinspection ALL
 //test func
+/*
 func GetRules() *[]Rule {
 	// 编写测试用 rules
 	res := []Rule{
@@ -80,12 +82,13 @@ func GetRules() *[]Rule {
 	}
 	return &res
 }
-
+*/
 func AddRule(rule Rule) bool {
 	Mysql()
 	defer Db.Close()
 
 	Db.AutoMigrate(&NewRule{})
+	Db.AutoMigrate(&WhiteList{})
 	var newRule = rule2newRule(rule)
 	if err := Db.Create(&newRule).Error; err != nil {
 		return false

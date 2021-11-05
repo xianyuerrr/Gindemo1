@@ -8,5 +8,6 @@ type Client struct {
 	Channel           string `json:"channel" binding:"required"`
 	VersionCode       string `json:"version_code" binding:"required"`
 	UpdateVersionCode string `json:"update_version_code" binding:"required"`
-	Aid               string `json:"aid" binding:"required"`
+	Aid               int    `json:"aid" binding:"required"`
+	CpuArch           int    `json:"cpu_arch" binding:"required"`
 }

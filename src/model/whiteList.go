@@ -1,6 +1,9 @@
 package model
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+	"strings"
+)
 
 type WhiteList struct {
 	gorm.Model
@@ -11,7 +14,11 @@ type WhiteList struct {
 func (WhiteList) TableName() string {
 	return "white_list"
 }
-func ParseWhiteList(DeviceIdList string) []WhiteList {
-	//todo
-	return []WhiteList{}
+func ParseWhiteList(DeviceIdList string) *[]WhiteList {
+	whiteListString := strings.Split(DeviceIdList, ",")
+	var whiteLists []WhiteList
+	for _, device := range whiteListString {
+		whiteLists = append(whiteLists, WhiteList{DeviceName: device})
+	}
+	return &whiteLists
 }
