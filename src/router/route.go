@@ -7,6 +7,6 @@ import (
 )
 
 func CustomRoute(r *gin.Engine) {
-	r.GET("/check", controller.Check)
+	r.POST("/check", controller.Check)
 	r.POST("/config", middleware.Validate(), controller.Config)
 }

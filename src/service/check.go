@@ -2,7 +2,6 @@ package service
 
 import (
 	"demo1/src/model"
-	"github.com/spf13/cast"
 	"math/rand"
 )
 
@@ -59,7 +58,7 @@ func matchRule(rule *model.Rule, form *model.Client) bool {
 		//设备平台
 		return false
 	}
-	if cast.ToInt(form.Aid) != rule.Aid {
+	if form.Aid != rule.Aid {
 		//app 是否相同
 		return false
 	}
@@ -71,8 +70,11 @@ func matchRule(rule *model.Rule, form *model.Client) bool {
 		//是否符合 版本要求（应⽤⼩版本，⽐如8.1.4.01）
 		return false
 	}
-	if cast.ToInt((*form).OsApi) < (*rule).MinOsApi || cast.ToInt((*form).OsApi) > (*rule).MaxOsApi {
+	if (*form).OsApi < (*rule).MinOsApi || (*form).OsApi > (*rule).MaxOsApi {
 		//系统 是否适配
+		return false
+	}
+	if (*form).CpuArch != (*rule).CpuArch {
 		return false
 	}
 	return true

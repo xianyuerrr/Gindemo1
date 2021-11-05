@@ -41,48 +41,17 @@ func rule2newRule(rule Rule) NewRule {
 }
 
 func GetRules(deviceId string) *[]Rule {
-	//todo test
 	Mysql()
 	defer Db.Close()
 
 	var newRules = make([]NewRule, 0)
-	err := Db.Model(&WhiteList{}).Where("device_name = ?", deviceId).Association("rules").Find(&newRules)
-	if err != nil {
-		panic(err)
-	}
+	_ = Db.Preloads(&WhiteList{}).Find(&newRules).Where("device_name = ?", deviceId)
 	rules := make([]Rule, 0)
 	for index := 0; index < len(newRules); index++ {
 		rules = append(rules, newRules[index].Rule)
 	}
 	return &rules
 }
-
-//noinspection ALL
-//test func
-/*
-func GetRules() *[]Rule {
-	// 编写测试用 rules
-	res := []Rule{
-		Rule{
-			1,
-			"Android",
-			"downloadUrl1",
-			"1.2.1",
-			"md51",
-			"device_1, device_2",
-			"1.1",
-			"1.0",
-			10,
-			5,
-			"64",
-			"华为",
-			"弹窗1",
-			"新版本1",
-		},
-	}
-	return &res
-}
-*/
 func AddRule(rule Rule) bool {
 	Mysql()
 	defer Db.Close()
