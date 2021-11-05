@@ -2,7 +2,9 @@ package service
 
 import (
 	"demo1/src/model"
+	"github.com/spf13/cast"
 	"math/rand"
+	"strings"
 )
 
 func Hit(form model.Client) (string, string, string, string, string) {
@@ -66,10 +68,17 @@ func matchRule(rule *model.Rule, form *model.Client) bool {
 		//渠道 是否相同
 		return false
 	}
-	if (*form).UpdateVersionCode < (*rule).MinUpdateVersionCode || (*form).UpdateVersionCode > (*rule).MaxUpdateVersionCode {
-		//是否符合 版本要求（应⽤⼩版本，⽐如8.1.4.01）
-		return false
+
+	//是否符合 版本要求（应⽤⼩版本，⽐如8.1.4.01）
+	maxVersionCode := strings.Split((*rule).MaxUpdateVersionCode, ".")
+	minVersionCode := strings.Split((*rule).MinUpdateVersionCode, ".")
+	versionCode := strings.Split((*form).UpdateVersionCode, ".")
+	for index := 0; index < 4; index++ {
+		if cast.ToInt(versionCode[index]) < cast.ToInt(minVersionCode[index]) || cast.ToInt(versionCode[index]) > cast.ToInt(maxVersionCode[index]) {
+			return false
+		}
 	}
+
 	if (*form).OsApi < (*rule).MinOsApi || (*form).OsApi > (*rule).MaxOsApi {
 		//系统 是否适配
 		return false
