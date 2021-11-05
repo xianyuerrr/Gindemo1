@@ -77,6 +77,9 @@ func matchRule(rule *model.Rule, form *model.Client) bool {
 		if cast.ToInt(versionCode[index]) < cast.ToInt(minVersionCode[index]) || cast.ToInt(versionCode[index]) > cast.ToInt(maxVersionCode[index]) {
 			return false
 		}
+		if cast.ToInt(versionCode[index]) != cast.ToInt(minVersionCode[index]) || cast.ToInt(versionCode[index]) != cast.ToInt(maxVersionCode[index]) {
+			break
+		}
 	}
 
 	if (*form).OsApi < (*rule).MinOsApi || (*form).OsApi > (*rule).MaxOsApi {
