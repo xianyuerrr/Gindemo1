@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+//todo test
+
 func CheckConfig(config model.Rule) bool {
 
 	if !isValidAid(config.Aid) {
@@ -54,7 +56,7 @@ func CheckConfig(config model.Rule) bool {
 		return false
 	}
 
-	//todo 版本号化简
+	//版本号化简
 	config.UpdateVersionCode = simplifyVersionCode(config.UpdateVersionCode)
 	config.MaxUpdateVersionCode = simplifyVersionCode(config.MaxUpdateVersionCode)
 	config.MinUpdateVersionCode = simplifyVersionCode(config.MinUpdateVersionCode)
