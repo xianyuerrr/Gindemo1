@@ -56,6 +56,31 @@ func GetRules(deviceId string) []Rule {
 	return rules
 }
 
+//noinspection ALL
+//test func
+func GetRules() *[]Rule {
+	// 编写测试用 rules
+	res := []Rule{
+		Rule{
+			1,
+			"Android",
+			"downloadUrl1",
+			"1.2.1",
+			"md51",
+			"device_1, device_2",
+			"1.1",
+			"1.0",
+			10,
+			5,
+			"64",
+			"华为",
+			"弹窗1",
+			"新版本1",
+		},
+	}
+	return &res
+}
+
 func AddRule(rule Rule) bool {
 	Mysql()
 	defer Db.Close()
