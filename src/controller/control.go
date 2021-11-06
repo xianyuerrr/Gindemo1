@@ -19,10 +19,12 @@ func Config(c *gin.Context) {
 		return
 	}
 	if service.CheckConfig(config) {
-		c.JSON(http.StatusOK, config)
-	} else {
-		c.String(http.StatusBadRequest, "check fail")
+		if model.AddRule(config) {
+			c.JSON(http.StatusOK, config)
+			return
+		}
 	}
+	c.String(http.StatusBadRequest, "check fail")
 }
 
 func Check(c *gin.Context) {
