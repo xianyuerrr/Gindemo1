@@ -8,6 +8,6 @@ RUN go get github.com/gin-gonic/gin
 RUN go get github.com/jinzhu/gorm
 
 RUN cd /go/src/demo
-    && export GO111MODULE="on"
-    && export GOPROXY="https://mirrors.aliyun.com/goproxy/"
-    && go build -o greyRelease demo1
+RUN export GO111MODULE="on"
+RUN export GOPROXY="https://mirrors.aliyun.com/goproxy/"
+RUN go build -o greyRelease demo1
