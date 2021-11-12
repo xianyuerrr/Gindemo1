@@ -58,9 +58,24 @@ func CheckConfig(config model.Rule) bool {
 	}
 
 	//版本号化简
-	config.UpdateVersionCode = simplifyVersionCode(config.UpdateVersionCode)
-	config.MaxUpdateVersionCode = simplifyVersionCode(config.MaxUpdateVersionCode)
-	config.MinUpdateVersionCode = simplifyVersionCode(config.MinUpdateVersionCode)
+	if(MatVersion(config.UpdateVersionCode)){
+		config.UpdateVersionCode = simplifyVersionCode(config.UpdateVersionCode)
+	}else{
+		log.Println(" invalid UpdateVersionCode")
+		return false
+	}
+	if(MatVersion(config.MaxUpdateVersionCode)) {
+		config.MaxUpdateVersionCode = simplifyVersionCode(config.MaxUpdateVersionCode)
+	}else{
+		log.Println(" invalid MaxUpdateVersionCode")
+		return false
+	}
+	if(MatVersion(config.MinUpdateVersionCode)){
+		config.MinUpdateVersionCode = simplifyVersionCode(config.MinUpdateVersionCode)
+	}else{
+		log.Println(" invalid MinUpdateVersionCode")
+		return false
+	}
 
 	return true
 }
@@ -145,40 +160,48 @@ func isValidUpdateTips(updateTips string) bool {
 	return true
 }
 
-func simplifyVersionCode(VersionCode string) string {
-	temp := strings.Split(VersionCode, ".")
-	var ans string
-
-	for i := 0; i < len(temp); i++ {
-		t := 0
-		for j := 0; j < len(temp[i]); j++ {
-			ch := temp[i][j]
-			if ch != '0' {
-				t = j
-				break
-			}
+func MatVersion(VersionCode string) bool{
+	temp :=strings.Split(VersionCode,".")
+	if len(temp)>4{
+		return false
+	}
+	for i:=0;i<len(temp);i++{
+		if len(temp[i])>4{
+			return false
 		}
-		if i == 3 {
-			leavezero := 4 - len(temp[i]) + t
-			if leavezero > 0 {
-				for k := 0; k < leavezero; k++ {
-					ans = ans + "0"
+	}
+	return true
+}
+
+func simplifyVersionCode(VersionCode string) string {
+	temp :=strings.Split(VersionCode,".")
+	var ans string
+	for i:=0;i<len(temp);i++{
+		t:=-1
+		if len(temp[i])==0{
+			ans = ans + "0"
+		}else{
+			for j:=0;j<len(temp[i]);j++ {
+				ch := temp[i][j]
+				if ch != '0' {
+					t = j
+					break
 				}
 			}
+			if t!=-1 {
+				ans = ans + temp[i][t:]
+			}else{
+				ans= ans + "0"
+			}
 		}
-		ans = ans + temp[i][t:]
-		if i != len(temp)-1 {
+		if i!=len(temp)-1{
 			ans = ans + "."
 		}
 	}
 
-	if len(temp) < 4 {
-		for i := len(temp); i < 4; i++ {
-			if i == 3 {
-				ans = ans + ".0000"
-			} else {
-				ans = ans + ".0"
-			}
+	if len(temp)<4{
+		for i:=len(temp);i<4;i++{
+			ans = ans + ".0"
 		}
 	}
 	return ans
