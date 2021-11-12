@@ -11,6 +11,7 @@ import (
 
 func CheckConfig(config model.Rule) bool {
 
+	//return true
 	if !isValidAid(config.Aid) {
 		log.Println(" invalid Aid")
 		return false
