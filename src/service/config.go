@@ -161,7 +161,7 @@ func isValidUpdateTips(updateTips string) bool {
 
 func MatVersion(VersionCode string) bool{
 	temp :=strings.Split(VersionCode,".")
-	if len(temp)>3{
+	if len(temp)>4{
 		return false
 	}
 	for i:=0;i<len(temp);i++{
