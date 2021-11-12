@@ -14,6 +14,6 @@
 
 FROM centos:7
 
-COPY grayReleaseProject /root/server
+COPY greyReleaseProject /root/server
 EXPOSE 8000
 CMD /root/server
