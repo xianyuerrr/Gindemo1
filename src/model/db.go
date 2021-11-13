@@ -21,7 +21,7 @@ type Config struct {
 func Mysql() {
 	dbConfig := Config{}
 
-	data, err := ioutil.ReadFile("src/config.yml")
+	data, err := ioutil.ReadFile("https://github.com/kguniverse/techtrainingcamp-AppUpgrade/blob/master/src/config.yml")
 	if err != nil {
 		panic(err)
 	}
