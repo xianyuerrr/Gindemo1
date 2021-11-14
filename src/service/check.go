@@ -97,9 +97,9 @@ func quickSort(rules *[]model.Rule, l, r int) {
 		return
 	}
 
-	mid := l
 	randIdx := rand.Intn(r-l+1) + l
 	(*rules)[l], (*rules)[randIdx] = (*rules)[randIdx], (*rules)[l]
+	mid := l
 	target := (*rules)[l].UpdateVersionCode
 	for i, rule := range (*rules)[l : r+1] {
 		if rule.UpdateVersionCode <= target {
@@ -107,9 +107,12 @@ func quickSort(rules *[]model.Rule, l, r int) {
 			mid++
 		}
 	}
+	
+	(*rules)[mid-1], (*rules)[l] = (*rules)[l], (*rules)[mid-1]
+	
 	//左侧 小于等于 target
 	//右侧 大于 target
-	quickSort(rules, l, mid-1)
+	quickSort(rules, l, mid-2)
 	quickSort(rules, mid, r)
 	return
 }
@@ -122,12 +125,14 @@ func matchRule(rule *model.Rule, form *model.Client) bool {
 		//设备平台
 		return false
 	}
-	if form.Aid != rule.Aid {
-		//app 是否相同
-		return false
-	}
+	
 	if (*rule).Channel != (*form).Channel {
 		//渠道 是否相同
+		return false
+	}
+	
+	if form.Aid != rule.Aid {
+		//app 是否相同
 		return false
 	}
 
