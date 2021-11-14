@@ -71,7 +71,7 @@ func RemoveRule(modelId uint) bool {
 
 	var rule NewRule
 	rule.Model.ID = modelId
-	if err := Db.Delete(&rule).Where("Model.ID=?", modelId).Error; err != nil {
+	if err := Db.Delete(&rule).Where("id=?", modelId).Error; err != nil {
 		return false
 	}
 	return true
@@ -82,9 +82,9 @@ func EditRule(modelId uint) uint {
 	defer Db.Close()
 
 	var rule NewRule
-	rule.Model.ID = modelId
-	if err := Db.Model(&rule).Where("Model.ID=?", modelId).Update("Enable", "false").Error; err != nil {
-		return 0
+	_ = Db.First(&rule, modelId)
+	if err := Db.Model(&rule).Update("Enable", !rule.Enable).Error; err != nil {
+		panic(err)
 	}
 	return rule.Model.ID
 }
