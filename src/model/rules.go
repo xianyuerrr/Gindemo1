@@ -70,8 +70,8 @@ func RemoveRule(modelId uint) bool {
 	defer Db.Close()
 
 	var rule NewRule
-	rule.Model.ID = modelId
-	if err := Db.Delete(&rule).Where("id=?", modelId).Error; err != nil {
+	_ = Db.First(&rule, modelId)
+	if err := Db.Delete(&rule).Error; err != nil {
 		return false
 	}
 	return true
