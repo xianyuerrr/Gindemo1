@@ -40,12 +40,33 @@ func AddConfig(c *gin.Context) {
 }
 
 func RmConfig(c *gin.Context) {
+	var modelID uint
+	if err := c.ShouldBind(&modelID); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	success := model.RemoveRule(modelID)
+	if success {
+		c.JSON(http.StatusOK, gin.H{"message": "remove successfully"})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"message": "remove fail"})
+	}
+	return
 	//todo
-	c.JSON(http.StatusOK, gin.H{"message": "hello Rm"})
 }
+
 func EditConfig(c *gin.Context) {
-	//todo
-	c.JSON(http.StatusOK, gin.H{"message": "hello Edit"})
+	var modelID uint
+	if err := c.ShouldBind(&modelID); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	newModelID := model.EditRule(modelID)
+	if newModelID != 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "please remember this id", "rule_id": modelID})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"message": "update fail"})
+	}
 }
 
 func Check(c *gin.Context) {
