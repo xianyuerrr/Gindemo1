@@ -3,6 +3,7 @@ package main
 import (
 	"demo1/src/router"
 	"github.com/gin-gonic/gin"
+	_ "net/http/pprof"
 )
 
 func main() {
