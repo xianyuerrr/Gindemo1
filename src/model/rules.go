@@ -46,7 +46,7 @@ func GetRules(deviceId string) *[]Rule {
 	defer Db.Close()
 
 	var newRules = make([]NewRule, 0)
-	_ = Db.Preloads(&WhiteList{}).Find(&newRules).Where("device_name = ?", deviceId)
+	_ = Db.Preloads(&WhiteList{}).Find(&newRules).Where("device_name = ? && enable = 1", deviceId)
 	rules := make([]Rule, 0)
 	for index := 0; index < len(newRules); index++ {
 		rules = append(rules, newRules[index].Rule)
@@ -64,4 +64,27 @@ func AddRule(rule Rule) uint {
 		return 0
 	}
 	return newRule.Model.ID
+}
+func RemoveRule(modelId uint) bool {
+	Mysql()
+	defer Db.Close()
+
+	var rule NewRule
+	_ = Db.First(&rule, modelId)
+	if err := Db.Delete(&rule).Error; err != nil {
+		return false
+	}
+	return true
+}
+
+func EditRule(modelId uint) uint {
+	Mysql()
+	defer Db.Close()
+
+	var rule NewRule
+	_ = Db.First(&rule, modelId)
+	if err := Db.Model(&rule).Update("Enable", !rule.Enable).Error; err != nil {
+		panic(err)
+	}
+	return rule.Model.ID
 }

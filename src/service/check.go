@@ -16,15 +16,15 @@ func Hit(form *model.Client) (string, string, string, string, string) {
 
 	//var rules *[]model.Rule
 	rules := model.GetRules(form.DeviceId)
-	
+
 	//order by updateVersionCode, use quickSort O(nlogn)
 	quickSort(rules, 0, len(*rules)-1)
-	
+
 	//对于 rule, 显然 rule.UpdateVersionCode > rule.MaxUpdateVersionCode >= rule.MinUpdateVersionCode
 	//按照常理来说，对 rule.UpdateVersionCode 进行排序之后，rule.MaxUpdateVersionCode 和 rule.MinUpdateVersionCode 也是有序的
 	// 所以进行二分，找到 form.UpdateVersionCode 符合的 rule 子集
 	left, right := binarySearchLeft(rules, form), binarySearchRight(rules, form)
-	
+
 	//由于 rules 是按照从小到大的顺序排列，而有多个匹配的规则时，应该返回 UpdateVersion 最大的（即返回最新版本的安装包链接）
 	//所以需要 从 right 到 left 进行匹配，取第一个命中的 rule
 	for i := right; i >= left; i-- {
@@ -33,17 +33,17 @@ func Hit(form *model.Client) (string, string, string, string, string) {
 			break
 		}
 	}
-	
+
 	return getDownloadInfo(hitRule)
 }
 
 func binarySearchRight(rules *[]model.Rule, form *model.Client) int {
 	l, r := 0, len(*rules)-1
-	for l < r{
-		m := l + ((r-l) >> 1 + 1) // 很怪，>> 比 r-l 先执行？？？
+	for l < r {
+		m := l + ((r-l)>>1 + 1) // 很怪，>> 比 r-l 先执行？？？
 		//if form.UpdateVersionCode < (*rules)[m].MinUpdateVersionCode
 		if compareUpdateVersionCode(form.UpdateVersionCode, (*rules)[m].MinUpdateVersionCode) == -1 {
-			r = m-1
+			r = m - 1
 		} else {
 			l = m
 		}
@@ -51,14 +51,13 @@ func binarySearchRight(rules *[]model.Rule, form *model.Client) int {
 	return l
 }
 
-
 func binarySearchLeft(rules *[]model.Rule, form *model.Client) int {
 	l, r := 0, len(*rules)-1
-	for l < r{
-		m := l + ((r-l) >> 1) // 很怪，>> 比 r-l 先执行？？？
+	for l < r {
+		m := l + ((r - l) >> 1) // 很怪，>> 比 r-l 先执行？？？
 		//if form.UpdateVersionCode > (*rules)[m].MaxUpdateVersionCode {
-		if compareUpdateVersionCode(form.UpdateVersionCode, (*rules)[m].MaxUpdateVersionCode) == 1{
-			l = m+1
+		if compareUpdateVersionCode(form.UpdateVersionCode, (*rules)[m].MaxUpdateVersionCode) == 1 {
+			l = m + 1
 		} else {
 			r = m
 		}
@@ -66,15 +65,14 @@ func binarySearchLeft(rules *[]model.Rule, form *model.Client) int {
 	return l
 }
 
-
 func compareUpdateVersionCode(UpdateVersionCode1, UpdateVersionCode2 string) int {
 	/*
-	比较 UpdateVersionCode 大小的函数，UpdateVersionCode1 和 UpdateVersionCode2 格式相同(eg. "1.1.1.1")
-	返回值解析 : 
-	-1 : UpdateVersionCode1 < UpdateVersionCode2
-	0 : UpdateVersionCode1 == UpdateVersionCode2
-	1 : UpdateVersionCode1 > UpdateVersionCode2
-	 */
+		比较 UpdateVersionCode 大小的函数，UpdateVersionCode1 和 UpdateVersionCode2 格式相同(eg. "1.1.1.1")
+		返回值解析 :
+		-1 : UpdateVersionCode1 < UpdateVersionCode2
+		0 : UpdateVersionCode1 == UpdateVersionCode2
+		1 : UpdateVersionCode1 > UpdateVersionCode2
+	*/
 	var res int = 0
 	lis1 := strings.Split(UpdateVersionCode1, ".")
 	lis2 := strings.Split(UpdateVersionCode2, ".")
@@ -88,9 +86,8 @@ func compareUpdateVersionCode(UpdateVersionCode1, UpdateVersionCode2 string) int
 			break
 		}
 	}
-	return res 
+	return res
 }
-
 
 func quickSort(rules *[]model.Rule, l, r int) {
 	if l >= r {
@@ -107,9 +104,9 @@ func quickSort(rules *[]model.Rule, l, r int) {
 			mid++
 		}
 	}
-	
+
 	(*rules)[mid-1], (*rules)[l] = (*rules)[l], (*rules)[mid-1]
-	
+
 	//左侧 小于等于 target
 	//右侧 大于 target
 	quickSort(rules, l, mid-2)
@@ -125,7 +122,7 @@ func matchRule(rule *model.Rule, form *model.Client) bool {
 		//设备平台
 		return false
 	}
-	
+
 	if (*rule).Channel != (*form).Channel {
 		//渠道 是否相同
 		return false
@@ -136,6 +133,10 @@ func matchRule(rule *model.Rule, form *model.Client) bool {
 		return false
 	}
 
+	if form.Aid != rule.Aid {
+		//app 是否相同
+		return false
+	}
 	//是否符合 版本要求（应⽤⼩版本，⽐如8.1.4.01），将版本筛选放到前面了，此函数不再需要负责此部分工作了
 
 	if (*form).OsApi < (*rule).MinOsApi || (*form).OsApi > (*rule).MaxOsApi {

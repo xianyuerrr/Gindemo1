@@ -7,11 +7,9 @@ import (
 	"strings"
 )
 
-//todo test
-
 func CheckConfig(config model.Rule) bool {
 
-	return true
+	//return true
 	if !isValidAid(config.Aid) {
 		log.Println(" invalid Aid")
 		return false
