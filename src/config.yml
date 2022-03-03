@@ -1,6 +1,5 @@
-mysql:
-  dsn: "kgkg:Wang0805@tcp(rm-bp17dut928o4el9fcvo.mysql.rds.aliyuncs.com:3306)/sys?charset=utf8mb4&parseTime=True&loc=Local"
-  max_open: 100
-  max_idle: 10
-  life_time: "+3s"
-  log: true
+dsn: "root:123456@tcp(localhost:3306)/grayRelease?charset=utf8mb4&parseTime=True&loc=Local"
+max_open: 100
+max_idle: 10
+life_time: "+3s"
+log: true

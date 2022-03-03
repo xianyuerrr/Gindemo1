@@ -1,40 +1,45 @@
 package model
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
+	"gopkg.in/yaml.v3"
+	"io/ioutil"
+	"time"
 )
 
 var Db *gorm.DB
 
-type Config struct {
-	Mysql struct {
-		Dsn      string `yaml:"dsn"`
-		MaxOpen  int    `yaml:"max_open"`
-		MaxIdle  int    `yaml:"max_idle"`
-		LifeTime string `yaml:"life_time"`
-		Log      bool   `yaml:"log"`
-	}
+type MysqlConfig struct {
+	Dsn      string `yaml:"dsn"`
+	MaxOpen  int    `yaml:"max_open"`
+	MaxIdle  int    `yaml:"max_idle"`
+	LifeTime string `yaml:"life_time"`
+	Log      bool   `yaml:"log"`
 }
 
-func Mysql() {
-	//dbConfig := Config{}
-	//
-	//data, err := ioutil.ReadFile("https://github.com/kguniverse/techtrainingcamp-AppUpgrade/blob/master/src/config.yml")
-	//if err != nil {
-	//	panic(err)
-	//}
-	//err = yaml.Unmarshal([]byte(data), &dbConfig)
-	//if err != nil {
-	//	panic(err)
-	//}
-	//db, err := gorm.Open("mysql", dbConfig.Mysql.Dsn)
-	//if err != nil {
-	//	panic(err)
-	//}
-	Dsn := "kgkg:Wang0805@tcp(rm-bp17dut928o4el9fcvo.mysql.rds.aliyuncs.com:3306)/sys?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open("mysql", Dsn)
+func init() {
+	config := MysqlConfig{}
+
+	yamlFile, err := ioutil.ReadFile("../config.yml")
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	err = yaml.Unmarshal(yamlFile, &config)
+
+	Db, err = gorm.Open("mysql", config.Dsn)
 	if err != nil {
 		panic(err)
 	}
-	Db = db
+
+	sqlDb := Db.DB()
+	// SetMaxIdleConns 设置空闲连接池中连接的最大数量
+	sqlDb.SetMaxIdleConns(config.MaxIdle)
+	// SetMaxOpenConns 设置打开数据库连接的最大数量
+	sqlDb.SetMaxOpenConns(config.MaxOpen)
+
+	// SetConnMaxLifetime 设置了连接可复用的最大时间。
+	sqlDb.SetConnMaxLifetime(time.Hour)
 }

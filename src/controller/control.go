@@ -11,7 +11,8 @@ import (
 func Config(c *gin.Context) {
 	action := c.Param("action")
 	if action == "" {
-		c.String(http.StatusBadRequest, "params failed")
+		// writes the given string into the response body.
+		c.String(http.StatusBadRequest, "There is not a action named nil.")
 		return
 	} else if action == "add" {
 		AddConfig(c)
@@ -54,7 +55,7 @@ func RmConfig(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "remove fail"})
 	}
 	return
-	//todo
+	// todo
 }
 
 func EditConfig(c *gin.Context) {
@@ -65,7 +66,7 @@ func EditConfig(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	newModelID := model.EditRule(id.Id)
+	newModelID := model.UpdateRule(id.Id)
 	if newModelID != 0 {
 		c.JSON(http.StatusOK, gin.H{"message": "please remember this id", "rule_id": id.Id})
 	} else {
