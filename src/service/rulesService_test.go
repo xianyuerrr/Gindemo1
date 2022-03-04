@@ -11,3 +11,6 @@ func TestGetAllRules(t *testing.T) {
 		fmt.Println(rules[i])
 	}
 }
+
+func TestUpdateRule(t *testing.T) {
+}

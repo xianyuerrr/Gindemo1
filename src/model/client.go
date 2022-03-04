@@ -7,7 +7,7 @@ type Client struct {
 	Version string `json:"version" binding:"required"`
 	// 设备平台
 	DevicePlatform string `json:"device_platform" binding:"required"`
-	// 设备 ID
+	// 设备 Id
 	DeviceId string `json:"device_id" binding:"required"`
 	// 安卓的系统版本
 	OsApi int `json:"os_api" binding:"required"`

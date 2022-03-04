@@ -10,6 +10,7 @@ import (
 // todo test
 
 type Rule struct {
+	Id uint `form:"id" gorm:"Column:id; primary_key; AUTO_INCREMENT" json:"id"`
 	// app的唯⼀标识，全匹配
 	Aid int `form:"aid" binding:"required" json:"aid" gorm:"Column:aid"`
 	// 平台，Android/iOS，字符串匹配
@@ -58,7 +59,6 @@ func CreateRuleFromString(string string) *Rule {
 }
 
 type NewRule struct {
-	ID uint `gorm:"Column:id; primary_key; AUTO_INCREMENT" json:"id"`
 	*Rule
 	CreatTime  time.Time `gorm:"Column:create_time" json:"creat_time"`
 	DeleteTime time.Time `gorm:"Column:delete_time" json:"delete_time"`

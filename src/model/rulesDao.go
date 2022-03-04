@@ -57,16 +57,6 @@ func GetRuleById(id uint) *NewRule {
 	return &newRule
 }
 
-func GetRuleByAid(aid int) *NewRule {
-	var newRule NewRule
-	err := Db.Where("aid = ?", aid).First(&newRule)
-	if err.Error != nil {
-		fmt.Println(err.Error)
-		return nil
-	}
-	return &newRule
-}
-
 func AddRule(rule *Rule) bool {
 	var newRule = rule2NewRule(*rule)
 	Db.AutoMigrate(&NewRule{})

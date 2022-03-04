@@ -12,7 +12,7 @@ func GetAllRules() []model.Rule {
 
 // AddRule 新增rule，若已存在aid相同的，将其启用且更新
 func AddRule(rule *model.Rule) bool {
-	newRule := model.GetRuleByAid(rule.Aid)
+	newRule := model.GetRuleById(rule.Id)
 	// 不存在此记录，将其添加进数据库
 	if newRule == nil {
 		return model.AddRule(rule)
@@ -26,7 +26,7 @@ func AddRule(rule *model.Rule) bool {
 
 // UpdateRule 更新rule
 func UpdateRule(rule *model.Rule) bool {
-	newRule := model.GetRuleByAid(rule.Aid)
+	newRule := model.GetRuleById(rule.Id)
 	// 不存在此记录，无法更新
 	if newRule == nil {
 		return false
@@ -38,8 +38,8 @@ func UpdateRule(rule *model.Rule) bool {
 }
 
 // DeleteRule 删除rule（不是真的从数据库删除）
-func DeleteRule(aid int) bool {
-	newRule := model.GetRuleByAid(aid)
+func DeleteRule(id uint) bool {
+	newRule := model.GetRuleById(id)
 	if newRule == nil {
 		return false
 	}
@@ -49,8 +49,8 @@ func DeleteRule(aid int) bool {
 }
 
 // ReleaseRule 上线版本
-func ReleaseRule(aid int) bool {
-	newRule := model.GetRuleByAid(aid)
+func ReleaseRule(id uint) bool {
+	newRule := model.GetRuleById(id)
 	if newRule == nil {
 		return false
 	}
@@ -59,8 +59,8 @@ func ReleaseRule(aid int) bool {
 }
 
 // OfflineRule 下线版本
-func OfflineRule(aid int) bool {
-	newRule := model.GetRuleByAid(aid)
+func OfflineRule(id uint) bool {
+	newRule := model.GetRuleById(id)
 	if newRule == nil {
 		return false
 	}

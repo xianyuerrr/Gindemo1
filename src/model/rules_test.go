@@ -43,8 +43,7 @@ func TestGetRulesById(t *testing.T) {
 }
 
 func TestGetRuleByAid(t *testing.T) {
-	r := GetRuleByAid(2)
-	fmt.Println(r)
+
 }
 
 func TestRemoveRule(t *testing.T) {
@@ -52,11 +51,11 @@ func TestRemoveRule(t *testing.T) {
 }
 
 func TestUpdateRule(t *testing.T) {
-	rule := GetRuleById(0)
+	rule := GetRuleById(1)
 	fmt.Println(rule)
 	rule.Aid = 4
 	rule.IsDelete = 1
-	// rule.ID = 3
+	// rule.Id = 3
 	fmt.Println(rule)
 	fmt.Println(UpdateRule(rule))
 }
