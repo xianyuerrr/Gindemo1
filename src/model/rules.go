@@ -2,7 +2,6 @@ package model
 
 import (
 	"encoding/json"
-	"fmt"
 	_ "fmt"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"time"
@@ -41,16 +40,21 @@ type Rule struct {
 	UpdateTips string `form:"update_tips" binding:"required" json:"update_tips" gorm:"Column:update_tips; Type:varchar(1024)"`
 }
 
-// 新版本检查接⼝规则，多条件的⽐较顺序是：
-// 业务id > platform > 渠道 > 设备⽩名单 > 【其他条件计算顺序均可】
-// 如果命中，返回满⾜条件的升级包的基本信息；⾄多只能返回⼀条升级包规则；
-
 func (r Rule) String() string {
 	buf, err := json.Marshal(r)
 	if err != nil {
 		return ""
 	}
 	return string(buf)
+}
+
+func CreateRuleFromString(string string) *Rule {
+	var rule Rule
+	err := json.Unmarshal([]byte(string), &rule)
+	if err != nil {
+		return nil
+	}
+	return &rule
 }
 
 type NewRule struct {
@@ -74,62 +78,11 @@ func (r NewRule) String() string {
 	return string(buf)
 }
 
-func rule2NewRule(rule Rule) NewRule {
-	return NewRule{Rule: &rule,
-		CreatTime:  time.Now(),
-		DeleteTime: time.Now(),
-		IsDelete:   0,
-		IsRelease:  0}
-}
-
-// GetAllRules 根据 deviceId 获取对应的 rules
-func GetAllRules() *[]Rule {
-	var newRules []NewRule
-	Db.Find(&newRules)
-	rules := make([]Rule, 0)
-	for index := 0; index < len(newRules); index++ {
-		rules = append(rules, *(newRules[index].Rule))
-	}
-	return &rules
-}
-
-func GetRuleById(id uint) *NewRule {
+func CreateNewRuleFromString(string string) *NewRule {
 	var newRule NewRule
-	err := Db.First(&newRule, id)
-	if err.Error != nil {
+	err := json.Unmarshal([]byte(string), &newRule)
+	if err != nil {
 		return nil
 	}
 	return &newRule
-}
-
-func GetRuleByAid(aid int) *NewRule {
-	var newRule NewRule
-	err := Db.Where("aid = ?", aid).First(&newRule)
-	if err.Error != nil {
-		fmt.Println(err.Error)
-		return nil
-	}
-	return &newRule
-}
-
-func AddRule(rule *Rule) bool {
-	var newRule = rule2NewRule(*rule)
-	Db.AutoMigrate(&NewRule{})
-	err := Db.Create(&newRule)
-	return err.Error == nil
-}
-
-// RemoveRule 删除
-func RemoveRule(id uint) bool {
-	err := Db.Delete(&NewRule{}, id)
-	if err.Error != nil {
-		fmt.Println(err.Error)
-		return false
-	}
-	return true
-}
-
-func UpdateRule(newRule *NewRule) bool {
-	err := Db.Model(&NewRule{}).Where("id = ?", newRule.ID).Update(newRule)
-	return err.RowsAffected == 1
 }

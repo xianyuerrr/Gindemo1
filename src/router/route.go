@@ -1,9 +1,9 @@
 package router
 
 import (
-	"demo1/src/controller"
-	"demo1/src/router/middleware"
 	"github.com/gin-gonic/gin"
+	"grayRelease/src/controller"
+	"grayRelease/src/router/middleware"
 )
 
 func CustomRoute(r *gin.Engine) {

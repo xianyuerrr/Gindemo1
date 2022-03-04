@@ -1,7 +1,7 @@
 package service
 
 import (
-	"demo1/src/model"
+	"grayRelease/src/model"
 	"log"
 	"strconv"
 	"strings"
@@ -9,7 +9,7 @@ import (
 
 func CheckConfig(config model.Rule) bool {
 
-	//return true
+	// return true
 	if !isValidAid(config.Aid) {
 		log.Println(" invalid Aid")
 		return false
@@ -55,7 +55,7 @@ func CheckConfig(config model.Rule) bool {
 		return false
 	}
 
-	//版本号化简
+	// 版本号化简
 	if MatVersion(config.UpdateVersionCode) {
 		config.UpdateVersionCode = simplifyVersionCode(config.UpdateVersionCode)
 	} else {

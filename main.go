@@ -1,8 +1,8 @@
 package main
 
 import (
-	"demo1/src/router"
 	"github.com/gin-gonic/gin"
+	"grayRelease/src/router"
 	"log"
 	"net/http"
 	_ "net/http/pprof"

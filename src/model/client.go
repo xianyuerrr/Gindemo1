@@ -1,5 +1,7 @@
 package model
 
+import "encoding/json"
+
 type Client struct {
 	// 请求api版本
 	Version string `json:"version" binding:"required"`
@@ -19,4 +21,21 @@ type Client struct {
 	Aid int `json:"aid" binding:"required"`
 	// 设备的cpu架构: 32/64
 	CpuArch string `json:"cpu_arch" binding:"required"`
+}
+
+func (client Client) String() string {
+	buf, err := json.Marshal(client)
+	if err != nil {
+		return ""
+	}
+	return string(buf)
+}
+
+func CreateClientFromString(string string) *Client {
+	var client Client
+	err := json.Unmarshal([]byte(string), &client)
+	if err != nil {
+		return nil
+	}
+	return &client
 }

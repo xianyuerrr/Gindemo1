@@ -56,7 +56,7 @@ func TestUpdateRule(t *testing.T) {
 	fmt.Println(rule)
 	rule.Aid = 4
 	rule.IsDelete = 1
-	// rule.ID = 20
+	// rule.ID = 3
 	fmt.Println(rule)
 	fmt.Println(UpdateRule(rule))
 }
