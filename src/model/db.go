@@ -21,7 +21,7 @@ type MysqlConfig struct {
 func init() {
 	config := MysqlConfig{}
 
-	yamlFile, err := ioutil.ReadFile("../config.yml")
+	yamlFile, err := ioutil.ReadFile("config.yml")
 
 	if err != nil {
 		fmt.Println(err.Error())

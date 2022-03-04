@@ -7,8 +7,8 @@ import (
 
 func TestGetRules(t *testing.T) {
 	rules := GetAllRules()
-	for i := 0; i < len(*rules); i++ {
-		fmt.Println((*rules)[i])
+	for i := 0; i < len(rules); i++ {
+		fmt.Println((rules)[i])
 	}
 }
 

@@ -7,12 +7,11 @@ import (
 
 func Validate() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		//session/cookie中获取
+		// session/cookie中获取
 		username := c.Query("user")
 		password := c.Query("passwd")
 
 		if username == "admin" && password == "admin" {
-			c.JSON(http.StatusOK, gin.H{"message": "身份验证成功"})
 			c.Next()
 		} else {
 			c.Abort()

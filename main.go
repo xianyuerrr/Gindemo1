@@ -27,5 +27,5 @@ func main() {
 
 	r := gin.Default()
 	router.CustomRoute(r)
-	r.Run("8000")
+	r.Run(":8000")
 }

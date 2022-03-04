@@ -5,6 +5,19 @@ import (
 	"time"
 )
 
+func NewRule2Rule(rule NewRule) Rule {
+	return *rule.Rule
+}
+
+func NewRules2Rules(rules []NewRule) []Rule {
+	n := len(rules)
+	res := make([]Rule, n)
+	for i := 0; i < n; i++ {
+		res[i] = NewRule2Rule(rules[i])
+	}
+	return res
+}
+
 func rule2NewRule(rule Rule) NewRule {
 	return NewRule{Rule: &rule,
 		CreatTime:  time.Now(),
@@ -13,11 +26,26 @@ func rule2NewRule(rule Rule) NewRule {
 		IsRelease:  0}
 }
 
-// GetAllRules 根据 deviceId 获取对应的 rules
-func GetAllRules() *[]NewRule {
+func Rules2NewRules(rules []Rule) []NewRule {
+	n := len(rules)
+	res := make([]NewRule, n)
+	for i := 0; i < n; i++ {
+		res[i] = rule2NewRule(rules[i])
+	}
+	return res
+}
+
+// GetAllRules 获取数据库中所有 is_delete 为 0 的记录
+func GetAllRules() []NewRule {
 	var rules []NewRule
-	Db.Find(&rules)
-	return &rules
+	Db.Where("is_delete = ?", 0).Find(&rules)
+	return rules
+}
+
+func GetReleasedRules() []NewRule {
+	var rules []NewRule
+	Db.Where("is_release = ?", 1).Find(&rules)
+	return rules
 }
 
 func GetRuleById(id uint) *NewRule {
@@ -57,6 +85,7 @@ func RemoveRule(id uint) bool {
 }
 
 func UpdateRule(newRule *NewRule) bool {
-	err := Db.Model(&NewRule{}).Where("id = ?", newRule.ID).Update(newRule)
+	// err := Db.Model(&NewRule{}).Select("*").Omit("id").Update(newRule)
+	err := Db.Save(newRule)
 	return err.RowsAffected == 1
 }
