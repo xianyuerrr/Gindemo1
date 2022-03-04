@@ -10,7 +10,7 @@ import (
 // todo test
 
 type Rule struct {
-	// app的唯⼀标识，全匹配
+	// app的唯⼀标识，全匹配，多个 app，一个 app 可以有多条规则
 	Aid int `form:"aid" binding:"required" json:"aid" gorm:"Column:aid"`
 	// 平台，Android/iOS，字符串匹配
 	Platform string `form:"platform" binding:"required" json:"platform" db:"platform" gorm:"Column:platform; Type:varchar(20)"`
@@ -59,7 +59,7 @@ func CreateRuleFromString(string string) *Rule {
 
 type NewRule struct {
 	ID uint `gorm:"Column:id; primary_key; AUTO_INCREMENT" json:"id"`
-	*Rule
+	Rule
 	CreatTime  time.Time `gorm:"Column:create_time" json:"creat_time"`
 	DeleteTime time.Time `gorm:"Column:delete_time" json:"delete_time"`
 	IsDelete   int       `gorm:"Column:is_delete" json:"is_delete"`

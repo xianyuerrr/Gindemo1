@@ -9,7 +9,7 @@ import (
 
 func Check(c *gin.Context) {
 	var client model.Client
-	if err := c.ShouldBindJSON(&client); err != nil {
+	if err := c.ShouldBind(&client); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

@@ -7,69 +7,67 @@ import (
 	"strings"
 )
 
-func CheckConfig(config model.Rule) bool {
-
-	// return true
-	if !isValidAid(config.Aid) {
+func CheckConfig(rule model.NewRule) bool {
+	if !isValidAid(rule.Aid) {
 		log.Println(" invalid Aid")
 		return false
 	}
-	if !isValidPlatform(config.Platform) {
+	if !isValidPlatform(rule.Platform) {
 		log.Println(" invalid Platform")
 		return false
 	}
-	if !isValidDownloadUrl(config.DownloadUrl) {
+	if !isValidDownloadUrl(rule.DownloadUrl) {
 		log.Println(" invalid DownloadUrl")
 		return false
 	}
-	if !isValidUVC(config.UpdateVersionCode) {
+	if !isValidUVC(rule.UpdateVersionCode) {
 		log.Println(" invalid UpdateVersionCode")
 		return false
 	}
-	if !isValidMd5(config.Md5) {
+	if !isValidMd5(rule.Md5) {
 		log.Println(" invalid Md5")
 		return false
 	}
-	if !isValidDeviceIdList(config.DeviceIdList) {
+	if !isValidDeviceIdList(rule.DeviceIdList) {
 		log.Println(" invalid DeviceIdList")
 		return false
 	}
-	if !isValidMaxMinUVC(config.MaxUpdateVersionCode, config.MinUpdateVersionCode) {
+	if !isValidMaxMinUVC(rule.MaxUpdateVersionCode, rule.MinUpdateVersionCode) {
 		log.Println(" invalid MaxUpdateVersionCode or MinUpdateVersionCode")
 		return false
 	}
-	if !isValidMaxMinOsApi(config.MaxOsApi, config.MinOsApi) {
+	if !isValidMaxMinOsApi(rule.MaxOsApi, rule.MinOsApi) {
 		log.Println(" invalid MaxOsApi or MinOsApi")
 		return false
 	}
-	if !isValidCpuArch(config.CpuArch) {
+	if !isValidCpuArch(rule.CpuArch) {
 		log.Println(" invalid CpuArch")
 		return false
 	}
-	if !isValidTitle(config.Title) {
+	if !isValidTitle(rule.Title) {
 		log.Println(" invalid Title")
 		return false
 	}
-	if !isValidUpdateTips(config.UpdateTips) {
+	if !isValidUpdateTips(rule.UpdateTips) {
 		log.Println(" invalid UpdateTips")
 		return false
 	}
 
 	// 版本号化简
-	if MatVersion(config.UpdateVersionCode) {
-		config.UpdateVersionCode = simplifyVersionCode(config.UpdateVersionCode)
+	if MatVersion(rule.UpdateVersionCode) {
+		rule.UpdateVersionCode = simplifyVersionCode(rule.UpdateVersionCode)
 	} else {
 		log.Println(" invalid UpdateVersionCode")
 		return false
 	}
-	if MatVersion(config.MaxUpdateVersionCode) {
-		config.MaxUpdateVersionCode = simplifyVersionCode(config.MaxUpdateVersionCode)
+	if MatVersion(rule.MaxUpdateVersionCode) {
+		rule.MaxUpdateVersionCode = simplifyVersionCode(rule.MaxUpdateVersionCode)
 	} else {
 		log.Println(" invalid MaxUpdateVersionCode")
 		return false
 	}
-	if MatVersion(config.MinUpdateVersionCode) {
-		config.MinUpdateVersionCode = simplifyVersionCode(config.MinUpdateVersionCode)
+	if MatVersion(rule.MinUpdateVersionCode) {
+		rule.MinUpdateVersionCode = simplifyVersionCode(rule.MinUpdateVersionCode)
 	} else {
 		log.Println(" invalid MinUpdateVersionCode")
 		return false

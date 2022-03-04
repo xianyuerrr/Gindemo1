@@ -26,8 +26,8 @@ func Config(c *gin.Context) {
 	}
 }
 
-func getRule(c *gin.Context) *model.Rule {
-	var rule model.Rule
+func getRule(c *gin.Context) *model.NewRule {
+	var rule model.NewRule
 	if err := c.ShouldBind(&rule); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return nil
@@ -35,15 +35,15 @@ func getRule(c *gin.Context) *model.Rule {
 	return &rule
 }
 
-func getAid(c *gin.Context) int {
+func getId(c *gin.Context) uint {
 	var id struct {
-		Aid int `json:"aid" form:"aid"`
+		Id uint `json:"id" form:"id"`
 	}
 	if err := c.ShouldBind(&id); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return -1
+		return 0
 	}
-	return id.Aid
+	return id.Id
 }
 
 func AddRule(c *gin.Context) {
@@ -57,7 +57,7 @@ func AddRule(c *gin.Context) {
 }
 
 func DeleteRule(c *gin.Context) {
-	aid := getAid(c)
+	aid := getId(c)
 	if service.DeleteRule(aid) {
 		c.JSON(http.StatusOK, gin.H{"message": "remove successfully"})
 	} else {
@@ -77,7 +77,7 @@ func UpdateRule(c *gin.Context) {
 }
 
 func ReleaseRule(c *gin.Context) {
-	aid := getAid(c)
+	aid := getId(c)
 	if service.ReleaseRule(aid) {
 		c.JSON(http.StatusOK, gin.H{"message": "release rule successfully", "rule_aid": aid})
 		return
@@ -86,7 +86,7 @@ func ReleaseRule(c *gin.Context) {
 }
 
 func OfflineRule(c *gin.Context) {
-	aid := getAid(c)
+	aid := getId(c)
 	if service.OfflineRule(aid) {
 		c.JSON(http.StatusOK, gin.H{"message": "offline rule successfully", "rule_aid": aid})
 		return

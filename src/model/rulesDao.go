@@ -6,7 +6,7 @@ import (
 )
 
 func NewRule2Rule(rule NewRule) Rule {
-	return *rule.Rule
+	return rule.Rule
 }
 
 func NewRules2Rules(rules []NewRule) []Rule {
@@ -19,7 +19,7 @@ func NewRules2Rules(rules []NewRule) []Rule {
 }
 
 func rule2NewRule(rule Rule) NewRule {
-	return NewRule{Rule: &rule,
+	return NewRule{Rule: rule,
 		CreatTime:  time.Now(),
 		DeleteTime: time.Now(),
 		IsDelete:   0,
@@ -57,20 +57,9 @@ func GetRuleById(id uint) *NewRule {
 	return &newRule
 }
 
-func GetRuleByAid(aid int) *NewRule {
-	var newRule NewRule
-	err := Db.Where("aid = ?", aid).First(&newRule)
-	if err.Error != nil {
-		fmt.Println(err.Error)
-		return nil
-	}
-	return &newRule
-}
-
-func AddRule(rule *Rule) bool {
-	var newRule = rule2NewRule(*rule)
+func AddRule(rule *NewRule) bool {
 	Db.AutoMigrate(&NewRule{})
-	err := Db.Create(&newRule)
+	err := Db.Create(&rule)
 	return err.Error == nil
 }
 

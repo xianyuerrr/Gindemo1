@@ -10,7 +10,7 @@ import (
 
 func Hit(client *model.Client) (string, string, string, string, string) {
 	// 先查询缓存
-	var hitRule *model.Rule
+	var hitRule *model.NewRule
 
 	var cache Cache
 	hitRule = cache.Hit(client)
@@ -47,11 +47,11 @@ func Hit(client *model.Client) (string, string, string, string, string) {
 	return getDownloadInfo(hitRule)
 }
 
-func findInWhitelist(client *model.Client, rule *model.Rule) bool {
+func findInWhitelist(client *model.Client, rule *model.NewRule) bool {
 	return true
 }
 
-func binarySearchRight(rules []model.Rule, client *model.Client) int {
+func binarySearchRight(rules []model.NewRule, client *model.Client) int {
 	l, r := 0, len(rules)-1
 	for l < r {
 		m := l + ((r-l)>>1 + 1) // 很怪，>> 比 r-l 先执行？？？
@@ -65,7 +65,7 @@ func binarySearchRight(rules []model.Rule, client *model.Client) int {
 	return l
 }
 
-func binarySearchLeft(rules []model.Rule, client *model.Client) int {
+func binarySearchLeft(rules []model.NewRule, client *model.Client) int {
 	l, r := 0, len(rules)-1
 	for l < r {
 		m := l + ((r - l) >> 1) // 很怪，>> 比 r-l 先执行？？？
@@ -103,7 +103,7 @@ func compareUpdateVersionCode(UpdateVersionCode1, UpdateVersionCode2 string) int
 	return res
 }
 
-func quickSort(rules *[]model.Rule, l, r int) {
+func quickSort(rules *[]model.NewRule, l, r int) {
 	if l >= r {
 		return
 	}
@@ -128,7 +128,7 @@ func quickSort(rules *[]model.Rule, l, r int) {
 	return
 }
 
-func matchRule(rule *model.Rule, client *model.Client) bool {
+func matchRule(rule *model.NewRule, client *model.Client) bool {
 	// model.Client.Version : 请求api版本，⽐如v1/v2
 	// model.Client.version_code : 应⽤⼤版本，⽐如8.1.4
 	// deviceIdList 白名单，model 里处理
@@ -167,7 +167,7 @@ func matchRule(rule *model.Rule, client *model.Client) bool {
 	return true
 }
 
-func getDownloadInfo(rule *model.Rule) (string, string, string, string, string) {
+func getDownloadInfo(rule *model.NewRule) (string, string, string, string, string) {
 	if nil == rule {
 		return "", "", "", "", ""
 	}
