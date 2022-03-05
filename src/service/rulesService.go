@@ -69,7 +69,7 @@ func OfflineRule(id uint) bool {
 }
 
 // GetReleasedRules 获取以及发布上线的rule
-func GetReleasedRules() []model.Rule {
-	rules := model.GetReleasedRules()
+func GetReleasedRules(aid int) []model.Rule {
+	rules := model.GetReleasedRules(aid)
 	return model.NewRules2Rules(rules)
 }

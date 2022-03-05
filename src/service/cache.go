@@ -9,25 +9,25 @@ import (
 )
 
 type Cache interface {
-	Hit(client *model.Client) *model.Rule
-	Store(client *model.Client, rule *model.Rule) bool
+	Hit(client *model.Client) *string
+	Store(client *model.Client, res string) bool
 }
 
 type Redis struct {
 	Cli *redis.Client
 }
 
-func (redis Redis) Hit(client *model.Client) *model.Rule {
+func (redis Redis) Hit(client *model.Client) *string {
 	ruleStr, err := redis.Cli.Get(client.String()).Result()
 	if err != nil {
 		fmt.Println("name does not exist")
 		return nil
 	}
-	return model.CreateRuleFromString(ruleStr)
+	return &ruleStr
 }
 
-func (redis Redis) Store(client *model.Client, rule *model.Rule) bool {
-	err := redis.Cli.Set(client.String(), rule.String(), time.Hour+(time.Duration(rand.Intn(30))*time.Minute))
+func (redis Redis) Store(client *model.Client, res string) bool {
+	err := redis.Cli.Set(client.String(), res, time.Hour+(time.Duration(rand.Intn(30))*time.Minute))
 	return err == nil
 }
 

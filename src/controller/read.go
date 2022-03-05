@@ -9,11 +9,17 @@ import (
 
 func Check(c *gin.Context) {
 	var client model.Client
-	if err := c.ShouldBindJSON(&client); err != nil {
+	if err := c.ShouldBind(&client); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	downloadUrl, updateVersionCode, md5, title, updateTips := service.Hit(&client)
+
+	res := service.Hit(&client)
+	downloadUrl := res[0]
+	updateVersionCode := res[1]
+	md5 := res[2]
+	title := res[3]
+	updateTips := res[4]
 	c.JSON(http.StatusOK, gin.H{
 		"download_url:":       downloadUrl,
 		"update_version_code": updateVersionCode,

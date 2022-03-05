@@ -42,9 +42,9 @@ func GetAllRules() []NewRule {
 	return rules
 }
 
-func GetReleasedRules() []NewRule {
+func GetReleasedRules(aid int) []NewRule {
 	var rules []NewRule
-	Db.Where("is_release = ?", 1).Find(&rules)
+	Db.Where("aid = ? AND is_release = ?", aid, 1).Find(&rules)
 	return rules
 }
 

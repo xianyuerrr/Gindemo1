@@ -8,14 +8,13 @@ import (
 	"strings"
 )
 
-func Hit(client *model.Client) (string, string, string, string, string) {
+func Hit(client *model.Client) []string {
 	// 先查询缓存
-	var hitRule *model.Rule
-
 	var cache Cache
-	hitRule = cache.Hit(client)
-	if hitRule != nil {
-		return getDownloadInfo(hitRule)
+	cache = GetCache()
+	resCache := cache.Hit(client)
+	if resCache != nil {
+		return strings.Split(*resCache, ",")
 	}
 	// if hit,
 	// return downloadUrl, updateVersionCode, md5, title, updateTips
@@ -25,8 +24,10 @@ func Hit(client *model.Client) (string, string, string, string, string) {
 	// 如果命中，返回满⾜条件的升级包的基本信息；⾄多只能返回⼀条升级包规则；
 
 	// var rules *[]model.Rule
-	rules := GetReleasedRules()
-
+	rules := GetReleasedRules(client.Aid)
+	if rules == nil || cap(rules) == 0 {
+		return getDownloadInfo(nil)
+	}
 	// order by updateVersionCode, use quickSort O(nlogn)
 	quickSort(&rules, 0, len(rules)-1)
 
@@ -37,14 +38,16 @@ func Hit(client *model.Client) (string, string, string, string, string) {
 
 	// 由于 rules 是按照从小到大的顺序排列，而有多个匹配的规则时，应该返回 UpdateVersion 最大的（即返回最新版本的安装包链接）
 	// 所以需要 从 right 到 left 进行匹配，取第一个命中的 rule
+	var hitRule model.Rule
 	for i := right; i >= left; i-- {
 		if matchRule(&(rules)[i], client) {
-			hitRule = &(rules)[i]
+			hitRule = rules[i]
 			break
 		}
 	}
-	cache.Store(client, hitRule)
-	return getDownloadInfo(hitRule)
+	res := getDownloadInfo(&hitRule)
+	cache.Store(client, strings.Join(res, ","))
+	return res
 }
 
 func findInWhitelist(client *model.Client, rule *model.Rule) bool {
@@ -132,9 +135,10 @@ func matchRule(rule *model.Rule, client *model.Client) bool {
 	// model.Client.Version : 请求api版本，⽐如v1/v2
 	// model.Client.version_code : 应⽤⼤版本，⽐如8.1.4
 	// deviceIdList 白名单，model 里处理
-	if !findInWhitelist(client, rule) {
-		return false
-	}
+
+	// if findInWhitelist(client, rule) {
+	// 	return true
+	// }
 
 	if client.DevicePlatform != rule.Platform {
 		// 设备平台
@@ -143,16 +147,6 @@ func matchRule(rule *model.Rule, client *model.Client) bool {
 
 	if rule.Channel != client.Channel {
 		// 渠道 是否相同
-		return false
-	}
-
-	if client.Aid != rule.Aid {
-		// app 是否相同
-		return false
-	}
-
-	if client.Aid != rule.Aid {
-		// app 是否相同
 		return false
 	}
 	// 是否符合 版本要求（应⽤⼩版本，⽐如8.1.4.01），将版本筛选放到前面了，此函数不再需要负责此部分工作了
@@ -167,9 +161,9 @@ func matchRule(rule *model.Rule, client *model.Client) bool {
 	return true
 }
 
-func getDownloadInfo(rule *model.Rule) (string, string, string, string, string) {
+func getDownloadInfo(rule *model.Rule) []string {
 	if nil == rule {
-		return "", "", "", "", ""
+		return []string{"", "", "", "", ""}
 	}
-	return (*rule).DownloadUrl, (*rule).UpdateTips, (*rule).Md5, (*rule).Title, (*rule).UpdateTips
+	return []string{(*rule).DownloadUrl, (*rule).UpdateTips, (*rule).Md5, (*rule).Title, (*rule).UpdateTips}
 }
