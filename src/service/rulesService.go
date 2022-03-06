@@ -11,8 +11,8 @@ func GetAllRules() []model.Rule {
 }
 
 // AddRule 新增rule，若已存在aid相同的，将其启用且更新
-func AddRule(rule *model.NewRule) bool {
-	newRule := model.GetRuleById(rule.ID)
+func AddRule(rule *model.Rule) bool {
+	newRule := model.GetRuleById(rule.Id)
 	// 不存在此记录，将其添加进数据库
 	if newRule == nil {
 		return model.AddRule(rule)
@@ -24,8 +24,8 @@ func AddRule(rule *model.NewRule) bool {
 }
 
 // UpdateRule 更新rule
-func UpdateRule(rule *model.NewRule) bool {
-	newRule := model.GetRuleById(rule.ID)
+func UpdateRule(rule *model.Rule) bool {
+	newRule := model.GetRuleById(rule.Id)
 	// 不存在此记录，无法更新
 	if newRule == nil {
 		return false
@@ -67,6 +67,7 @@ func OfflineRule(id uint) bool {
 }
 
 // GetReleasedRules 获取以及发布上线的rule
-func GetReleasedRules() []model.NewRule {
-	return model.GetReleasedRules()
+func GetReleasedRules(aid int) []model.Rule {
+	rules := model.GetReleasedRules(aid)
+	return model.NewRules2Rules(rules)
 }

@@ -7,7 +7,8 @@ import (
 	"strings"
 )
 
-func CheckConfig(rule model.NewRule) bool {
+func CheckConfig(rule model.Rule) bool {
+	// return true
 	if !isValidAid(rule.Aid) {
 		log.Println(" invalid Aid")
 		return false

@@ -1,0 +1,25 @@
+mysql_master:
+  dsn: "root:123456@tcp(localhost:3306)/grayRelease?charset=utf8mb4&parseTime=True&loc=Local"
+  max_open: 100
+  max_idle: 10
+  life_time: "+3s"
+  log: true
+
+mysql_from:
+  dsn: "root:123456@tcp(localhost:3306)/grayRelease?charset=utf8mb4&parseTime=True&loc=Local"
+  max_open: 1000
+  max_idle: 100
+  life_time: "+3s"
+  log: true
+
+mysql_author:
+  dsn: "root:123456@tcp(localhost:3306)/author?charset=utf8mb4&parseTime=True&loc=Local"
+  max_open: 100
+  max_idle: 10
+  life_time: "+3s"
+  log: true
+
+redis_cache:
+  addr: localhost:6379
+  password: ""
+  db: 0

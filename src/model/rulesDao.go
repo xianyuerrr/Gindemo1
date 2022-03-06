@@ -6,7 +6,7 @@ import (
 )
 
 func NewRule2Rule(rule NewRule) Rule {
-	return rule.Rule
+	return *rule.Rule
 }
 
 func NewRules2Rules(rules []NewRule) []Rule {
@@ -19,7 +19,7 @@ func NewRules2Rules(rules []NewRule) []Rule {
 }
 
 func rule2NewRule(rule Rule) NewRule {
-	return NewRule{Rule: rule,
+	return NewRule{Rule: &rule,
 		CreatTime:  time.Now(),
 		DeleteTime: time.Now(),
 		IsDelete:   0,
@@ -38,34 +38,40 @@ func Rules2NewRules(rules []Rule) []NewRule {
 // GetAllRules 获取数据库中所有 is_delete 为 0 的记录
 func GetAllRules() []NewRule {
 	var rules []NewRule
-	Db.Where("is_delete = ?", 0).Find(&rules)
+	db := GetReadDb()
+	db.Where("is_delete = ?", 0).Find(&rules)
 	return rules
 }
 
-func GetReleasedRules() []NewRule {
+func GetReleasedRules(aid int) []NewRule {
 	var rules []NewRule
-	Db.Where("is_release = ?", 1).Find(&rules)
+	db := GetReadDb()
+	db.Debug().Where("aid = ? AND is_release = ?", aid, 1).Find(&rules)
 	return rules
 }
 
 func GetRuleById(id uint) *NewRule {
 	var newRule NewRule
-	err := Db.First(&newRule, id)
+	db := GetReadDb()
+	err := db.First(&newRule, id)
 	if err.Error != nil {
 		return nil
 	}
 	return &newRule
 }
 
-func AddRule(rule *NewRule) bool {
-	Db.AutoMigrate(&NewRule{})
-	err := Db.Create(&rule)
+func AddRule(rule *Rule) bool {
+	var newRule = rule2NewRule(*rule)
+	db := GetWriteDb()
+	db.AutoMigrate(&NewRule{})
+	err := masterDb.Create(&newRule)
 	return err.Error == nil
 }
 
 // RemoveRule 删除
 func RemoveRule(id uint) bool {
-	err := Db.Delete(&NewRule{}, id)
+	db := GetWriteDb()
+	err := db.Delete(&NewRule{}, id)
 	if err.Error != nil {
 		fmt.Println(err.Error)
 		return false
@@ -74,7 +80,8 @@ func RemoveRule(id uint) bool {
 }
 
 func UpdateRule(newRule *NewRule) bool {
-	// err := Db.Model(&NewRule{}).Select("*").Omit("id").Update(newRule)
-	err := Db.Save(newRule)
+	// err := masterDb.Model(&NewRule{}).Select("*").Omit("id").Update(newRule)
+	db := GetReadDb()
+	err := db.Save(newRule)
 	return err.RowsAffected == 1
 }

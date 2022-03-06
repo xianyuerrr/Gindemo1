@@ -7,10 +7,9 @@ import (
 	"time"
 )
 
-// todo test
-
 type Rule struct {
-	// app的唯⼀标识，全匹配，多个 app，一个 app 可以有多条规则
+	Id uint `form:"id" gorm:"Column:id; primary_key; AUTO_INCREMENT" json:"id"`
+	// app的唯⼀标识，全匹配
 	Aid int `form:"aid" binding:"required" json:"aid" gorm:"Column:aid"`
 	// 平台，Android/iOS，字符串匹配
 	Platform string `form:"platform" binding:"required" json:"platform" db:"platform" gorm:"Column:platform; Type:varchar(20)"`
@@ -48,18 +47,8 @@ func (r Rule) String() string {
 	return string(buf)
 }
 
-func CreateRuleFromString(string string) *Rule {
-	var rule Rule
-	err := json.Unmarshal([]byte(string), &rule)
-	if err != nil {
-		return nil
-	}
-	return &rule
-}
-
 type NewRule struct {
-	ID uint `gorm:"Column:id; primary_key; AUTO_INCREMENT" json:"id"`
-	Rule
+	*Rule
 	CreatTime  time.Time `gorm:"Column:create_time" json:"creat_time"`
 	DeleteTime time.Time `gorm:"Column:delete_time" json:"delete_time"`
 	IsDelete   int       `gorm:"Column:is_delete" json:"is_delete"`
@@ -76,13 +65,4 @@ func (r NewRule) String() string {
 		return ""
 	}
 	return string(buf)
-}
-
-func CreateNewRuleFromString(string string) *NewRule {
-	var newRule NewRule
-	err := json.Unmarshal([]byte(string), &newRule)
-	if err != nil {
-		return nil
-	}
-	return &newRule
 }

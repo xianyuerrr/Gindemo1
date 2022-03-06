@@ -26,8 +26,8 @@ func Config(c *gin.Context) {
 	}
 }
 
-func getRule(c *gin.Context) *model.NewRule {
-	var rule model.NewRule
+func getRule(c *gin.Context) *model.Rule {
+	var rule model.Rule
 	if err := c.ShouldBind(&rule); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return nil
@@ -57,8 +57,8 @@ func AddRule(c *gin.Context) {
 }
 
 func DeleteRule(c *gin.Context) {
-	aid := getId(c)
-	if service.DeleteRule(aid) {
+	id := getId(c)
+	if service.DeleteRule(id) {
 		c.JSON(http.StatusOK, gin.H{"message": "remove successfully"})
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "remove fail"})
