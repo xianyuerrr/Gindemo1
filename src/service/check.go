@@ -2,16 +2,17 @@ package service
 
 import (
 	"github.com/spf13/cast"
-	"grayRelease/src/model"
+	"grayRelease/src/model/cache"
+	"grayRelease/src/model/tables"
 
 	"math/rand"
 	"strings"
 )
 
-func Hit(client *model.Client) []string {
+func Hit(client *tables.Client) []string {
 	// 先查询缓存
-	var cache Cache
-	cache = GetCache()
+	var cache cache.Cache
+	cache = cache.GetCache()
 	resCache := cache.Hit(client)
 	if resCache != nil {
 		return strings.Split(*resCache, ",")
@@ -38,7 +39,7 @@ func Hit(client *model.Client) []string {
 
 	// 由于 rules 是按照从小到大的顺序排列，而有多个匹配的规则时，应该返回 UpdateVersion 最大的（即返回最新版本的安装包链接）
 	// 所以需要 从 right 到 left 进行匹配，取第一个命中的 rule
-	var hitRule model.Rule
+	var hitRule tables.Rule
 	for i := right; i >= left; i-- {
 		if matchRule(&(rules)[i], client) {
 			hitRule = rules[i]
@@ -50,11 +51,11 @@ func Hit(client *model.Client) []string {
 	return res
 }
 
-func findInWhitelist(client *model.Client, rule *model.Rule) bool {
+func findInWhitelist(client *tables.Client, rule *tables.Rule) bool {
 	return true
 }
 
-func binarySearchRight(rules []model.Rule, client *model.Client) int {
+func binarySearchRight(rules []tables.Rule, client *tables.Client) int {
 	l, r := 0, len(rules)-1
 	for l < r {
 		m := l + ((r-l)>>1 + 1) // 很怪，>> 比 r-l 先执行？？？
@@ -68,7 +69,7 @@ func binarySearchRight(rules []model.Rule, client *model.Client) int {
 	return l
 }
 
-func binarySearchLeft(rules []model.Rule, client *model.Client) int {
+func binarySearchLeft(rules []tables.Rule, client *tables.Client) int {
 	l, r := 0, len(rules)-1
 	for l < r {
 		m := l + ((r - l) >> 1) // 很怪，>> 比 r-l 先执行？？？
@@ -106,7 +107,7 @@ func compareUpdateVersionCode(UpdateVersionCode1, UpdateVersionCode2 string) int
 	return res
 }
 
-func quickSort(rules *[]model.Rule, l, r int) {
+func quickSort(rules *[]tables.Rule, l, r int) {
 	if l >= r {
 		return
 	}
@@ -131,7 +132,7 @@ func quickSort(rules *[]model.Rule, l, r int) {
 	return
 }
 
-func matchRule(rule *model.Rule, client *model.Client) bool {
+func matchRule(rule *tables.Rule, client *tables.Client) bool {
 	// model.Client.Version : 请求api版本，⽐如v1/v2
 	// model.Client.version_code : 应⽤⼤版本，⽐如8.1.4
 	// deviceIdList 白名单，model 里处理
@@ -161,7 +162,7 @@ func matchRule(rule *model.Rule, client *model.Client) bool {
 	return true
 }
 
-func getDownloadInfo(rule *model.Rule) []string {
+func getDownloadInfo(rule *tables.Rule) []string {
 	if nil == rule {
 		return []string{"", "", "", "", ""}
 	}

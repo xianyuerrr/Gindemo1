@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"grayRelease/src/model"
+	"grayRelease/src/model/tables"
 	"grayRelease/src/service"
 	"net/http"
 )
@@ -26,8 +26,8 @@ func Config(c *gin.Context) {
 	}
 }
 
-func getRule(c *gin.Context) *model.Rule {
-	var rule model.Rule
+func getRule(c *gin.Context) *tables.Rule {
+	var rule tables.Rule
 	if err := c.ShouldBind(&rule); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return nil

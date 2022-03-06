@@ -1,4 +1,4 @@
-package model
+package tables
 
 import "encoding/json"
 
@@ -29,13 +29,4 @@ func (client Client) String() string {
 		return ""
 	}
 	return string(buf)
-}
-
-func CreateClientFromString(string string) *Client {
-	var client Client
-	err := json.Unmarshal([]byte(string), &client)
-	if err != nil {
-		return nil
-	}
-	return &client
 }

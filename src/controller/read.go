@@ -2,13 +2,13 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"grayRelease/src/model"
+	"grayRelease/src/model/tables"
 	"grayRelease/src/service"
 	"net/http"
 )
 
 func Check(c *gin.Context) {
-	var client model.Client
+	var client tables.Client
 	if err := c.ShouldBind(&client); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

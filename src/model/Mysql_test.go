@@ -6,5 +6,5 @@ import (
 )
 
 func TestMysqlConfig_getConf(t *testing.T) {
-	fmt.Println(Db)
+	fmt.Println(masterDb)
 }

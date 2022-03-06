@@ -2,16 +2,17 @@ package service
 
 import (
 	"grayRelease/src/model"
+	"grayRelease/src/model/tables"
 )
 
 // GetAllRules 获取所有 is_delete 为 0 的rule
-func GetAllRules() []model.Rule {
+func GetAllRules() []tables.Rule {
 	rules := model.GetAllRules()
 	return model.NewRules2Rules(rules)
 }
 
 // AddRule 新增rule，若已存在aid相同的，将其启用且更新
-func AddRule(rule *model.Rule) bool {
+func AddRule(rule *tables.Rule) bool {
 	newRule := model.GetRuleById(rule.Id)
 	// 不存在此记录，将其添加进数据库
 	if newRule == nil {
@@ -25,7 +26,7 @@ func AddRule(rule *model.Rule) bool {
 }
 
 // UpdateRule 更新rule
-func UpdateRule(rule *model.Rule) bool {
+func UpdateRule(rule *tables.Rule) bool {
 	newRule := model.GetRuleById(rule.Id)
 	// 不存在此记录，无法更新
 	if newRule == nil {
@@ -69,7 +70,7 @@ func OfflineRule(id uint) bool {
 }
 
 // GetReleasedRules 获取以及发布上线的rule
-func GetReleasedRules(aid int) []model.Rule {
+func GetReleasedRules(aid int) []tables.Rule {
 	rules := model.GetReleasedRules(aid)
 	return model.NewRules2Rules(rules)
 }

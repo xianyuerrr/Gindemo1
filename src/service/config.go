@@ -1,13 +1,13 @@
 package service
 
 import (
-	"grayRelease/src/model"
+	"grayRelease/src/model/tables"
 	"log"
 	"strconv"
 	"strings"
 )
 
-func CheckConfig(config model.Rule) bool {
+func CheckConfig(config tables.Rule) bool {
 
 	// return true
 	if !isValidAid(config.Aid) {

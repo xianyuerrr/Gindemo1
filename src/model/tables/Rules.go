@@ -1,4 +1,4 @@
-package model
+package tables
 
 import (
 	"encoding/json"
@@ -6,8 +6,6 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"time"
 )
-
-// todo test
 
 type Rule struct {
 	Id uint `form:"id" gorm:"Column:id; primary_key; AUTO_INCREMENT" json:"id"`
@@ -49,15 +47,6 @@ func (r Rule) String() string {
 	return string(buf)
 }
 
-func CreateRuleFromString(string string) *Rule {
-	var rule Rule
-	err := json.Unmarshal([]byte(string), &rule)
-	if err != nil {
-		return nil
-	}
-	return &rule
-}
-
 type NewRule struct {
 	*Rule
 	CreatTime  time.Time `gorm:"Column:create_time" json:"creat_time"`
@@ -76,13 +65,4 @@ func (r NewRule) String() string {
 		return ""
 	}
 	return string(buf)
-}
-
-func CreateNewRuleFromString(string string) *NewRule {
-	var newRule NewRule
-	err := json.Unmarshal([]byte(string), &newRule)
-	if err != nil {
-		return nil
-	}
-	return &newRule
 }
