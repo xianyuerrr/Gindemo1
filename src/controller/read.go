@@ -15,6 +15,7 @@ func Check(c *gin.Context) {
 	}
 
 	res := service.Hit(&client)
+
 	downloadUrl := res[0]
 	updateVersionCode := res[1]
 	md5 := res[2]

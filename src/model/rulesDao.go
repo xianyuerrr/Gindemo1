@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -18,8 +17,8 @@ func NewRules2Rules(rules []NewRule) []Rule {
 	return res
 }
 
-func rule2NewRule(rule Rule) NewRule {
-	return NewRule{Rule: &rule,
+func rule2NewRule(rule *Rule) NewRule {
+	return NewRule{Rule: rule,
 		CreatTime:  time.Now(),
 		DeleteTime: time.Now(),
 		IsDelete:   0,
@@ -30,7 +29,7 @@ func Rules2NewRules(rules []Rule) []NewRule {
 	n := len(rules)
 	res := make([]NewRule, n)
 	for i := 0; i < n; i++ {
-		res[i] = rule2NewRule(rules[i])
+		res[i] = rule2NewRule(&rules[i])
 	}
 	return res
 }
@@ -43,10 +42,12 @@ func GetAllRules() []NewRule {
 	return rules
 }
 
-func GetReleasedRules(aid int) []NewRule {
+func GetReleasedRules(aid int, platform string, channel string) []NewRule {
 	var rules []NewRule
 	db := GetReadDb()
-	db.Debug().Where("aid = ? AND is_release = ?", aid, 1).Find(&rules)
+	db.Debug().
+		Where("aid = ? AND is_release = ? AND platform = ? AND channel = ?", aid, 1, platform, channel).
+		Find(&rules)
 	return rules
 }
 
@@ -61,10 +62,10 @@ func GetRuleById(id uint) *NewRule {
 }
 
 func AddRule(rule *Rule) bool {
-	var newRule = rule2NewRule(*rule)
+	var newRule = rule2NewRule(rule)
 	db := GetWriteDb()
 	db.AutoMigrate(&NewRule{})
-	err := masterDb.Create(&newRule)
+	err := db.Create(&newRule)
 	return err.Error == nil
 }
 
@@ -72,11 +73,7 @@ func AddRule(rule *Rule) bool {
 func RemoveRule(id uint) bool {
 	db := GetWriteDb()
 	err := db.Delete(&NewRule{}, id)
-	if err.Error != nil {
-		fmt.Println(err.Error)
-		return false
-	}
-	return true
+	return err.Error == nil
 }
 
 func UpdateRule(newRule *NewRule) bool {

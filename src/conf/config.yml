@@ -18,8 +18,11 @@ mysql_author:
   max_idle: 10
   life_time: "+3s"
   log: true
-
-redis_cache:
+redis_check_cache:
   addr: localhost:6379
   password: ""
   db: 0
+redis_whitelist_cache:
+  addr: localhost:6379
+  password: ""
+  db: 1

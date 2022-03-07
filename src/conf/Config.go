@@ -21,10 +21,11 @@ type RedisConfig struct {
 }
 
 type Config struct {
-	MysqlMaster MysqlConfig `yaml:"mysql_master"`
-	MysqlFrom   MysqlConfig `yaml:"mysql_from"`
-	MysqlAuthor MysqlConfig `yaml:"mysql_author"`
-	RedisCache  RedisConfig `yaml:"redis_cache"`
+	MysqlMaster         MysqlConfig `yaml:"mysql_master"`
+	MysqlFrom           MysqlConfig `yaml:"mysql_from"`
+	MysqlAuthor         MysqlConfig `yaml:"mysql_author"`
+	RedisCheckCache     RedisConfig `yaml:"redis_check_cache"`
+	RedisWhitelistCache RedisConfig `yaml:"redis_whitelist_cache"`
 }
 
 var config Config
@@ -59,5 +60,5 @@ func GetMysqlAuthorConfig() MysqlConfig {
 }
 
 func GetRedisCacheConfig() RedisConfig {
-	return config.RedisCache
+	return config.RedisCheckCache
 }

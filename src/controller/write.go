@@ -5,26 +5,8 @@ import (
 	"grayRelease/src/model"
 	"grayRelease/src/service"
 	"net/http"
+	"strings"
 )
-
-func Config(c *gin.Context) {
-	action := c.Param("action")
-	if action == "" {
-		// writes the given string into the response body.
-		c.String(http.StatusBadRequest, "There is not a action named nil.")
-		return
-	} else if action == "add" {
-		AddRule(c)
-	} else if action == "delete" {
-		DeleteRule(c)
-	} else if action == "update" {
-		UpdateRule(c)
-	} else if action == "release" {
-		ReleaseRule(c)
-	} else if action == "offline" {
-		OfflineRule(c)
-	}
-}
 
 func getRule(c *gin.Context) *model.Rule {
 	var rule model.Rule
@@ -35,7 +17,7 @@ func getRule(c *gin.Context) *model.Rule {
 	return &rule
 }
 
-func getId(c *gin.Context) uint {
+func getRuleId(c *gin.Context) uint {
 	var id struct {
 		Id uint `json:"id" form:"id"`
 	}
@@ -46,50 +28,59 @@ func getId(c *gin.Context) uint {
 	return id.Id
 }
 
-func AddRule(c *gin.Context) {
+func AddRule(c *gin.Context) bool {
 	rule := getRule(c)
+	deviceIds := strings.Split(rule.DeviceIdList, ",")
+	for i := 0; i < len(deviceIds); i++ {
+		deviceIds[i] = strings.TrimSpace(deviceIds[i])
+	}
 	if service.CheckConfig(*rule) && service.AddRule(rule) {
-		c.JSON(http.StatusOK, gin.H{"message": "the rule added successfully", "rule_aid": rule.Aid})
-		return
+		service.AddDeviceIdToWhiteList(int(rule.Id), deviceIds)
+		c.JSON(http.StatusOK, gin.H{"message": "the rule added successfully", "rule_id": rule.Id})
+		return true
 
 	}
 	c.JSON(http.StatusBadRequest, gin.H{"message": "add rule fail"})
+	return false
 }
 
-func DeleteRule(c *gin.Context) {
-	id := getId(c)
+func DeleteRule(c *gin.Context) bool {
+	id := getRuleId(c)
 	if service.DeleteRule(id) {
-		c.JSON(http.StatusOK, gin.H{"message": "remove successfully"})
-	} else {
-		c.JSON(http.StatusOK, gin.H{"message": "remove fail"})
+		c.JSON(http.StatusOK, gin.H{"message": "remove successfully", "rule_id: ": id})
+		return true
 	}
-	return
+	c.JSON(http.StatusOK, gin.H{"message": "remove fail", "rule_id: ": id})
+	return false
 }
 
-func UpdateRule(c *gin.Context) {
+func UpdateRule(c *gin.Context) bool {
 	rule := getRule(c)
 
 	if service.CheckConfig(*rule) && service.UpdateRule(rule) {
-		c.JSON(http.StatusOK, gin.H{"message": "please remember this aid", "rule_aid": rule.Aid})
-	} else {
-		c.JSON(http.StatusOK, gin.H{"message": "update fail"})
+		c.JSON(http.StatusOK, gin.H{"message": "please remember this aid", "rule_id": rule.Id})
+		return true
 	}
+	c.JSON(http.StatusOK, gin.H{"message": "update fail"})
+	return false
 }
 
-func ReleaseRule(c *gin.Context) {
-	aid := getId(c)
-	if service.ReleaseRule(aid) {
-		c.JSON(http.StatusOK, gin.H{"message": "release rule successfully", "rule_aid": aid})
-		return
+func ReleaseRule(c *gin.Context) bool {
+	ruleId := getRuleId(c)
+	if service.ReleaseRule(ruleId) {
+		c.JSON(http.StatusOK, gin.H{"message": "release rule successfully", "rule_id": ruleId})
+		return true
 	}
-	c.JSON(http.StatusBadRequest, gin.H{"message": "release rule fail", "rule_aid": aid})
+	c.JSON(http.StatusBadRequest, gin.H{"message": "release rule fail", "rule_aid": ruleId})
+	return false
 }
 
-func OfflineRule(c *gin.Context) {
-	aid := getId(c)
-	if service.OfflineRule(aid) {
-		c.JSON(http.StatusOK, gin.H{"message": "offline rule successfully", "rule_aid": aid})
-		return
+func OfflineRule(c *gin.Context) bool {
+	ruleId := getRuleId(c)
+	if service.OfflineRule(ruleId) {
+		c.JSON(http.StatusOK, gin.H{"message": "offline rule successfully", "rule_id": ruleId})
+		return true
 	}
-	c.JSON(http.StatusBadRequest, gin.H{"message": "offline rule fail", "rule_aid": aid})
+	c.JSON(http.StatusBadRequest, gin.H{"message": "offline rule fail", "rule_id": ruleId})
+	return false
 }

@@ -5,11 +5,11 @@ import (
 )
 
 func Test_getCache(t *testing.T) {
-	GetRedisCache()
+	GetCheckRedisCache()
 }
 
 func TestRedis_Hit(t *testing.T) {
-	// redisCache := GetRedisCache()
+	// redisCheckCache := GetCheckRedisCache()
 	// client := Client{
 	// 	Version:           "1.1",
 	// 	DevicePlatform:    "apple",

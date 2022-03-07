@@ -9,22 +9,22 @@ import (
 )
 
 func Hit(client *model.Client) []string {
-	// 先查询缓存
-	var firstCache cache.Cache
-	firstCache = cache.GetRedisCache()
-	resCache := firstCache.Hit(client)
+	// 查询缓存
+	var checkCache cache.CheckCache
+	checkCache = cache.GetCheckRedisCache()
+	resCache := checkCache.Hit(client)
 	if resCache != nil {
 		return strings.Split(*resCache, ",")
 	}
 	// if hit,
-	// return downloadUrl, updateVersionCode, md5, title, updateTips
+	// return []string {downloadUrl, updateVersionCode, md5, title, updateTips}
 
 	// 新版本检查接⼝规则，多条件的⽐较顺序是：
 	// 业务id > platform > 渠道 > 设备⽩名单 > 【其他条件计算顺序均可】
 	// 如果命中，返回满⾜条件的升级包的基本信息；⾄多只能返回⼀条升级包规则；
 
-	// var rules *[]model.Rule
-	rules := GetReleasedRules(client.Aid)
+	// 根据 业务id > platform > 渠道 获取符合条件的 rules
+	rules := GetReleasedRules(client.Aid, client.DevicePlatform, client.Channel)
 	if rules == nil || cap(rules) == 0 {
 		return getDownloadInfo(nil)
 	}
@@ -46,11 +46,51 @@ func Hit(client *model.Client) []string {
 		}
 	}
 	res := getDownloadInfo(&hitRule)
-	firstCache.Store(client, strings.Join(res, ","))
+	checkCache.Store(client, strings.Join(res, ","))
 	return res
 }
 
-func findInWhitelist(client *model.Client, rule *model.Rule) bool {
+func quickSort(rules *[]model.Rule, l, r int) {
+	if l >= r {
+		return
+	}
+
+	randIdx := rand.Intn(r-l+1) + l
+	(*rules)[l], (*rules)[randIdx] = (*rules)[randIdx], (*rules)[l]
+	mid := l
+	target := (*rules)[l].UpdateVersionCode
+	for i, rule := range (*rules)[l : r+1] {
+		if rule.UpdateVersionCode <= target {
+			(*rules)[mid], (*rules)[l+i] = (*rules)[l+i], (*rules)[mid]
+			mid++
+		}
+	}
+
+	(*rules)[mid-1], (*rules)[l] = (*rules)[l], (*rules)[mid-1]
+
+	// 左侧 小于等于 target
+	// 右侧 大于 target
+	quickSort(rules, l, mid-2)
+	quickSort(rules, mid, r)
+	return
+}
+
+func matchRule(rule *model.Rule, client *model.Client) bool {
+	// 判断 deviceId 是否在 rule 的白名单
+	if ExistsDeviceIdInWhiteList(int(rule.Id), client.DeviceId) {
+		return true
+	}
+
+	// model.Client.Version : 请求api版本，⽐如v1/v2
+	// model.Client.version_code : 应⽤⼤版本，⽐如8.1.4
+	// 是否符合 版本要求（应⽤⼩版本，⽐如8.1.4.01），将版本筛选放到前面了，此函数不再需要负责此部分工作了
+	if client.OsApi < rule.MinOsApi || client.OsApi > rule.MaxOsApi {
+		// 系统 是否适配
+		return false
+	}
+	if client.CpuArch != rule.CpuArch {
+		return false
+	}
 	return true
 }
 
@@ -104,61 +144,6 @@ func compareUpdateVersionCode(UpdateVersionCode1, UpdateVersionCode2 string) int
 		}
 	}
 	return res
-}
-
-func quickSort(rules *[]model.Rule, l, r int) {
-	if l >= r {
-		return
-	}
-
-	randIdx := rand.Intn(r-l+1) + l
-	(*rules)[l], (*rules)[randIdx] = (*rules)[randIdx], (*rules)[l]
-	mid := l
-	target := (*rules)[l].UpdateVersionCode
-	for i, rule := range (*rules)[l : r+1] {
-		if rule.UpdateVersionCode <= target {
-			(*rules)[mid], (*rules)[l+i] = (*rules)[l+i], (*rules)[mid]
-			mid++
-		}
-	}
-
-	(*rules)[mid-1], (*rules)[l] = (*rules)[l], (*rules)[mid-1]
-
-	// 左侧 小于等于 target
-	// 右侧 大于 target
-	quickSort(rules, l, mid-2)
-	quickSort(rules, mid, r)
-	return
-}
-
-func matchRule(rule *model.Rule, client *model.Client) bool {
-	// model.Client.Version : 请求api版本，⽐如v1/v2
-	// model.Client.version_code : 应⽤⼤版本，⽐如8.1.4
-	// deviceIdList 白名单，model 里处理
-
-	// if findInWhitelist(client, rule) {
-	// 	return true
-	// }
-
-	if client.DevicePlatform != rule.Platform {
-		// 设备平台
-		return false
-	}
-
-	if rule.Channel != client.Channel {
-		// 渠道 是否相同
-		return false
-	}
-	// 是否符合 版本要求（应⽤⼩版本，⽐如8.1.4.01），将版本筛选放到前面了，此函数不再需要负责此部分工作了
-
-	if client.OsApi < rule.MinOsApi || client.OsApi > rule.MaxOsApi {
-		// 系统 是否适配
-		return false
-	}
-	if client.CpuArch != rule.CpuArch {
-		return false
-	}
-	return true
 }
 
 func getDownloadInfo(rule *model.Rule) []string {

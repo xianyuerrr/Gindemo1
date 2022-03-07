@@ -19,8 +19,8 @@ type Rule struct {
 	UpdateVersionCode string `form:"update_version_code" binding:"required" json:"update_version_code" gorm:"Column:update_version_code; Type:varchar(128)"`
 	// 包的MD5，命中后返回
 	Md5 string `form:"md_5" binding:"required" json:"md_5" gorm:"Column:md5; Type:varchar(128)"`
-	// 设备号⽩名单列表在⽩名单范围内即为命中
-	DeviceIdList string `form:"device_id_list" binding:"required" json:"device_id_list" gorm:"Column:device_id_list; Type:text"`
+	// 设备号⽩名单列表在⽩名单范围内即为命中，无视此列，将其存在其他表
+	DeviceIdList string `form:"device_id_list" binding:"required" json:"device_id_list" gorm:"-"`
 	// 可升级的最⼤版本号上传的版本号需⼩于或等于配置版本号
 	MaxUpdateVersionCode string `form:"max_update_version_code" binding:"required" json:"max_update_version_code" gorm:"Column:max_update_version_code; Type:varchar(128)"`
 	// 可升级的最⼩版本号上传的版本号需⼤于或等于配置版本号；

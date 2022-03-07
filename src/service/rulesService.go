@@ -15,6 +15,8 @@ func AddRule(rule *model.Rule) bool {
 	newRule := model.GetRuleById(rule.Id)
 	// 不存在此记录，将其添加进数据库
 	if newRule == nil {
+		// 防止自增主键跳跃插入导致主键值过大
+		rule.Id = 0
 		return model.AddRule(rule)
 	}
 	// 存在此纪录，更新其 is_delete 字段以及 Rule
@@ -31,6 +33,7 @@ func UpdateRule(rule *model.Rule) bool {
 		return false
 	}
 	// 存在此纪录，更新 Rule
+	newRule.Rule = rule
 	model.UpdateRule(newRule)
 	return true
 }
@@ -67,7 +70,7 @@ func OfflineRule(id uint) bool {
 }
 
 // GetReleasedRules 获取以及发布上线的rule
-func GetReleasedRules(aid int) []model.Rule {
-	rules := model.GetReleasedRules(aid)
+func GetReleasedRules(aid int, platform string, channel string) []model.Rule {
+	rules := model.GetReleasedRules(aid, platform, channel)
 	return model.NewRules2Rules(rules)
 }

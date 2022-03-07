@@ -22,3 +22,12 @@ func CreateNewRuleFromString(string string) *model.NewRule {
 	}
 	return &newRule
 }
+
+func Filter(s []model.Rule, fn func(rule model.Rule) bool) (match []model.Rule) {
+	for _, rule := range s {
+		if fn(rule) {
+			match = append(match, rule)
+		}
+	}
+	return
+}
